@@ -1,0 +1,148 @@
+{
+    "modules": [
+        {
+            "config": {
+                "position": [
+                    207,
+                    19
+                ]
+            },
+            "name": "New Model Object",
+            "value": {
+                "actionGroup": {
+                    "_default0_list": false,
+                    "_default1_show": false,
+                    "_default2_new_create": false,
+                    "_default3_edit_update": false,
+                    "_default4_delete": false,
+                    "customActions": [
+
+                    ]
+                },
+                "name": "Job",
+                "objectsettings": {
+                    "addDeletedField": false,
+                    "addHiddenField": false,
+                    "addStarttimeEndtimeFields": false,
+                    "aggregateRoot": true,
+                    "categorizable": false,
+                    "description": "",
+                    "mapToTable": "",
+                    "parentClass": "",
+                    "sorting": false,
+                    "type": "Entity",
+                    "uid": "159827521051"
+                },
+                "propertyGroup": {
+                    "properties": [
+                        {
+                            "allowedFileTypes": "",
+                            "maxItems": "1",
+                            "propertyDescription": "Queue name",
+                            "propertyIsExcludeField": false,
+                            "propertyIsRequired": false,
+                            "propertyName": "queueName",
+                            "propertyType": "String",
+                            "uid": "284444520240"
+                        },
+                        {
+                            "allowedFileTypes": "",
+                            "maxItems": "1",
+                            "propertyDescription": "Payload",
+                            "propertyIsExcludeField": false,
+                            "propertyIsRequired": false,
+                            "propertyName": "payload",
+                            "propertyType": "Text",
+                            "uid": "1202966279054"
+                        },
+                        {
+                            "allowedFileTypes": "",
+                            "maxItems": "1",
+                            "propertyDescription": "State",
+                            "propertyIsExcludeField": false,
+                            "propertyIsRequired": false,
+                            "propertyName": "state",
+                            "propertyType": "Integer",
+                            "uid": "1355739507667"
+                        },
+                        {
+                            "allowedFileTypes": "",
+                            "maxItems": "1",
+                            "propertyDescription": "Attemps",
+                            "propertyIsExcludeField": false,
+                            "propertyIsRequired": false,
+                            "propertyName": "attemps",
+                            "propertyType": "Integer",
+                            "uid": "870129579928"
+                        },
+                        {
+                            "allowedFileTypes": "",
+                            "maxItems": "1",
+                            "propertyDescription": "Starttime",
+                            "propertyIsExcludeField": false,
+                            "propertyIsRequired": false,
+                            "propertyName": "starttime",
+                            "propertyType": "DateTime",
+                            "uid": "1071521288133"
+                        },
+                        {
+                            "allowedFileTypes": "",
+                            "maxItems": "1",
+                            "propertyDescription": "Timestamp",
+                            "propertyIsExcludeField": false,
+                            "propertyIsRequired": false,
+                            "propertyName": "tstamp",
+                            "propertyType": "DateTime",
+                            "uid": "790171351156"
+                        }
+                    ]
+                },
+                "relationGroup": {
+                    "relations": [
+
+                    ]
+                }
+            }
+        }
+    ],
+    "properties": {
+        "backendModules": [
+
+        ],
+        "description": "Jobqueue service",
+        "emConf": {
+            "category": "services",
+            "custom_category": "",
+            "dependsOn": "typo3 => 6.2.0-7.6.99\n",
+            "disableLocalization": true,
+            "disableVersioning": true,
+            "sourceLanguage": "en",
+            "state": "beta",
+            "targetVersion": "6.2",
+            "version": "0.0.1"
+        },
+        "extensionKey": "jobqueue",
+        "name": "Jobqueue",
+        "originalExtensionKey": "jobqueue",
+        "persons": [
+            {
+                "company": "",
+                "email": "r3h6@outlook.com",
+                "name": "R3 H6",
+                "role": "Developer"
+            }
+        ],
+        "plugins": [
+
+        ],
+        "vendorName": "TYPO3"
+    },
+    "wires": [
+
+    ],
+    "log": {
+        "last_modified": "2015-11-08 01:11",
+        "extension_builder_version": "6.2.0",
+        "be_user": " (1)"
+    }
+}

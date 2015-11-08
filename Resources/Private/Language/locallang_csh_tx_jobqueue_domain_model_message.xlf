@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-10-30T23:46:05Z" product-name="jobqueue">
+		<header/>
+		<body>
+			<trans-unit id="identifier.description">
+				<source>Identifier</source>
+			</trans-unit>
+			<trans-unit id="payload.description">
+				<source>Payload</source>
+			</trans-unit>
+			<trans-unit id="state.description">
+				<source>State</source>
+			</trans-unit>
+			<trans-unit id="attemps.description">
+				<source>Attemps</source>
+			</trans-unit>
+			<trans-unit id="starttime.description">
+				<source>Starttime</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
