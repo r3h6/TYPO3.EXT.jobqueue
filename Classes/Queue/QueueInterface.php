@@ -18,7 +18,7 @@ namespace TYPO3\Jobqueue\Queue;
  */
 interface QueueInterface {
 
-	public function __construct($queueName, $options);
+	public function __construct($name, $options);
 
 	/**
 	 * Publish a message to the queue

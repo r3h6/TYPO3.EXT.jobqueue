@@ -20,10 +20,11 @@ class DatabaseQueue implements QueueInterface {
 	 */
 	protected $persistenceManager = NULL;
 
-	protected $queueName;
+	protected $name;
 
-	public function __construct($queueName, $options = NULL){
-		$this->queueName = $queueName;
+	public function __construct($name, $options){
+		$this->name = $name;
+		$this->options = $options;
 	}
 
 	public function publish(Message $message){
@@ -39,7 +40,7 @@ class DatabaseQueue implements QueueInterface {
 	}
 
 	public function waitAndReserve($timeout = NULL){
-		$job = $this->jobRepository->findNextByQueueName($this->queueName);
+		$job = $this->jobRepository->findNextByQueueName($this->name);
 		if ($job !== NULL){
 			$job->setState(Message::STATE_RESERVED);
 			$this->jobRepository->update($job);
@@ -72,7 +73,7 @@ class DatabaseQueue implements QueueInterface {
 
 	private function encodeJob (Message $message){
 		$job = new DatabaseJob();
-		$job->setQueueName($this->queueName);
+		$job->setQueueName($this->name);
 		$job->setPayload($message->getPayload());
 		$job->setAttemps($message->getAttemps());
 		$job->setState($message->getState());
