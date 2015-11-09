@@ -11,6 +11,7 @@ namespace TYPO3\Jobqueue\Queue;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Exception;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\Jobqueue\Exception as JobQueueException;
 
@@ -32,6 +33,13 @@ class QueueManager implements SingletonInterface {
 	protected $queues = array();
 
 	/**
+	 * ExtConf
+	 * @var TYPO3\Jobqueue\Configuration\ExtConf
+	 * @inject
+	 */
+	protected $extConf;
+
+	/**
 	 *
 	 * @param string $queueName
 	 * @return QueueInterface
@@ -39,18 +47,16 @@ class QueueManager implements SingletonInterface {
 	 */
 	public function getQueue($queueName) {
 		if (!isset($this->queues[$queueName])) {
-			// if (!isset($this->settings['queues'][$queueName])) {
-			// 	throw new JobQueueException('Queue "' . $queueName . '" is not configured', 1334054137);
-			// }
-			// if (!isset($this->settings['queues'][$queueName]['className'])) {
-			// 	throw new JobQueueException('Option className for queue "' . $queueName . '" is not configured', 1334147126);
-			// }
-			// $queueObjectName = $this->settings['queues'][$queueName]['className'];
-			// $options = isset($this->settings['queues'][$queueName]['options']) ? $this->settings['queues'][$queueName]['options'] : array();
-			// $queue = new $queueObjectName($queueName, $options);
+			$settings = $GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue'];
+			$className = $this->extConf->getDefaultQueue();
+			if (isset($settings[$queueName])){
+				$className = isset($settings[$queueName]['className']) ? $settings[$queueName]['className']: NULL;
+				$options = isset($settings[$queueName]['options']) ? $settings[$queueName]['options']: NULL;
+			} else {
+				$options = isset($settings[$className]['options']) ? $settings[$className]['options']: NULL;
+			}
 
-			$className = DatabaseQueue::class;
-			$queue = $this->objectManager->get($className, $queueName);
+			$queue = $this->objectManager->get($className, $queueName, $options);
 
 			if (!($queue instanceof QueueInterface)){
 				throw new Exception("Queue '$queueName' is not a queue.", 1446318455);

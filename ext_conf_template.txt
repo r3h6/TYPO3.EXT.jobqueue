@@ -1,0 +1,8 @@
+# cat=jobqueue//20 type=text; label=Default queue: Fully qualified queue name.
+defaultQueue = TYPO3\Jobqueue\Queue\DatabaseQueue
+
+# cat=jobqueue//20 type=int+; label=Default timeout: Default timeout in seconds.
+defaultTimeout = 0
+
+# cat=jobqueue//20 type=int+; label=Max attemps: Max attemps of running a job before ditch it.
+maxAttemps = 3
