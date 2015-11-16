@@ -11,6 +11,8 @@ namespace TYPO3\Jobqueue\Job;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Exception;
+use DateTime;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\Jobqueue\Exception as JobQueueException;
 use TYPO3\Jobqueue\Queue\Message;
@@ -27,7 +29,21 @@ class JobManager implements SingletonInterface {
 	 */
 	protected $queueManager;
 
-	protected $maxAttemps = 3;
+	/**
+	 * [$maxAttemps description]
+	 * @var integer
+	 */
+	protected $maxAttemps;
+
+	/**
+	 * @var TYPO3\Jobqueue\Configuration\ExtConf
+	 * @inject
+	 */
+	protected $extConf;
+
+	public function initializeObject (){
+		$this->maxAttemps = (int) $this->extConf->getMaxAttemps();
+	}
 
 	/**
 	 * Put a job in the queue
@@ -36,13 +52,25 @@ class JobManager implements SingletonInterface {
 	 * @param JobInterface $job
 	 * @return void
 	 */
-	public function queue($queueName, JobInterface $job) {
+	public function queue($queueName, JobInterface $job, DateTime $availableAt = NULL) {
 		$queue = $this->queueManager->getQueue($queueName);
 
 		$payload = serialize($job);
 		$message = new Message($payload);
+		$message->setAvailableAt($availableAt);
 
 		$queue->publish($message);
+	}
+
+	/**
+	 * [delay description]
+	 * @param  string       $queueName [description]
+	 * @param  int       $delay     [description]
+	 * @param  JobInterface $job       [description]
+	 * @return void                  [description]
+	 */
+	public function delay ($queueName, $delay, JobInterface $job){
+		$this->queue($queueName, $job, new DateTime('@' . time() . (int) $delay));
 	}
 
 	/**
@@ -64,11 +92,13 @@ class JobManager implements SingletonInterface {
 					$queue->finish($message);
 					return $job;
 				} else {
-					throw new JobQueueException('Job execution for "' . $message->getIdentifier() . '" failed', 1334056583);
+					throw new JobQueueException('Job execution for message "' . $message->getIdentifier() . '" failed', 1334056583);
 				}
 			} catch (Exception $exception){
-				if ($message->getAttemps() < $this->maxAttemps){
-					$message->setAttemps($message->getAtemps() + 1);
+				$attemps = $message->getAttemps() + 1;
+				if ($attemps < $this->maxAttemps){
+					$message->setAttemps($attemps);
+					$queue->finish($message);
 					$queue->publish($message);
 				}
 				throw $exception;
