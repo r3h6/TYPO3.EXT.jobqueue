@@ -11,6 +11,7 @@ namespace TYPO3\Jobqueue\Queue;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use \DateTime;
 
 /**
  * Message object
@@ -20,7 +21,6 @@ class Message {
 	// Created locally, not published to queue
 	const STATE_NEW = 0;
 	// Message published to queue, should not be processed by client
-	// TODO Rename _SUBMITTED
 	const STATE_PUBLISHED = 1;
 	// Message received from queue, not deleted from queue! (a.k.a. Reserved)
 	const STATE_RESERVED = 2;
@@ -33,26 +33,37 @@ class Message {
 	 *
 	 * @var string Identifier of the message
 	 */
-	protected $identifier;
+	protected $identifier = NULL;
 
 	/**
 	 * The message payload has to be serializable.
 	 *
-	 * @var mixed The message payload
+	 * @var string The message payload
 	 */
-	protected $payload;
+	protected $payload = NULL;
 
 	/**
 	 * @var integer State of the message, one of the Message::STATE_* constants
 	 */
 	protected $state = self::STATE_NEW;
 
+	/**
+	 * Gets increased every time the job is executed.
+	 *
+	 * @var integer Attemps
+	 */
 	protected $attemps = 0;
+
+	/**
+	 *
+	 * @var DateTime
+	 */
+	protected $availableAt = NULL;
 
 	/**
 	 * Constructor
 	 *
-	 * @param mixed $payload
+	 * @param string $payload
 	 * @param string $identifier
 	 */
 	public function __construct($payload, $identifier = NULL) {
@@ -72,10 +83,11 @@ class Message {
 		];
 	}
 
+
 	/**
-	 * @param string $identifier
+	 * @param string
 	 */
-	public function setIdentifier($identifier) {
+	public function setIdentifier($identifier){
 		$this->identifier = $identifier;
 	}
 
@@ -84,13 +96,6 @@ class Message {
 	 */
 	public function getIdentifier() {
 		return $this->identifier;
-	}
-
-	/**
-	 * @param mixed $payload
-	 */
-	public function setPayload($payload) {
-		$this->payload = $payload;
 	}
 
 	/**
@@ -130,5 +135,35 @@ class Message {
 	 */
 	public function setAttemps($attemps) {
 		$this->attemps = $attemps;
+	}
+
+	/**
+	 * Get availableAt
+	 *
+	 * @return DateTime Date when job is available.
+	 */
+	public function getAvailableAt() {
+		return $this->availableAt;
+	}
+
+	/**
+	 * Set availableAt
+	 *
+	 * @param DateTime $availableAt Date when job is available.
+	 */
+	public function setAvailableAt($availableAt) {
+		$this->availableAt = $availableAt;
+	}
+
+	/**
+	 * Get delay
+	 *
+	 * @return int Delay in seconds
+	 */
+	public function getDelay() {
+		if ($this->availableAt instanceof DateTime){
+			return max(0, (int) (new DateTime())->diff($this->availableAt)->format('%s'));
+		}
+		return NULL;
 	}
 }
