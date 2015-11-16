@@ -34,7 +34,7 @@ use TYPO3\Jobqueue\Queue\Message;
 class JobRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	protected $defaultOrderings = array(
-		'tstamp' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
+		'uid' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
 	);
 
 	/**
@@ -44,6 +44,7 @@ class JobRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		/** @var TYPO3\CMS\Extbase\Persistence\Generic\Query $query */
 		$query = $this->createQuery();
 		$constraints = array();
+		$constraints[] = $query->equals('queueName', $queueName);
 		$constraints[] = $query->equals('state', Message::STATE_PUBLISHED);
 		$constraints[] = $query->logicalOr(
 			$query->equals('starttime', 0),
