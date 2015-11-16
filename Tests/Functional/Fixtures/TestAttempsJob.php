@@ -26,8 +26,6 @@ class TestAttempsJob implements JobInterface {
 	 */
 	protected $processed = FALSE;
 
-	protected $attemps = 0;
-
 	/**
 	 * Do nothing
 	 *
@@ -36,10 +34,9 @@ class TestAttempsJob implements JobInterface {
 	 * @return boolean
 	 */
 	public function execute(QueueInterface $queue, Message $message) {
-		$this->attemps += 1;
-		switch ($this->attemps){
-			case 1: return FALSE;
-			case 2: throw new Exception('Test', 123456789);
+		switch ($message->getAttemps()){
+			case 0: return FALSE;
+			case 1: throw new Exception('Test', 123456789);
 		}
 		$this->processed = TRUE;
 		return TRUE;

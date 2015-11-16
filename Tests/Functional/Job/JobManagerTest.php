@@ -19,56 +19,66 @@ class ItemRepositoryTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase {
 	protected $coreExtensionsToLoad = array('extbase');
 	protected $testExtensionsToLoad = array('typo3conf/ext/jobqueue');
 
-	protected $jobManager = NULL;
 
-	protected $jobRepository = NULL;
+
+
+	protected $configurationToUseInTestInstance = [
+		'EXT' => [
+			'extConf' => [
+				'jobqueue' => [
+					'defaultQueue' => 'TYPO3\\Jobqueue\\Queue\\DatabaseQueue',
+					'defaultTimeout' => '0',
+					'maxAttemps' => '3',
+				],
+			],
+		],
+	];
+
+	protected $jobManager = NULL;
+	protected $queueName = 'TestQueue';
+
+	const TABLE = 'tx_jobqueue_domain_model_job';
 
 	public function setUp (){
 		parent::setUp();
 		$this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 		$this->jobManager = $this->objectManager->get(JobManager::class);
-		$this->jobRepository = $this->objectManager->get(JobRepository::class);
 
 		$this->setUpBasicFrontendEnvironment();
 	}
 
 	public function tearDown (){
 		parent::tearDown();
-		unset($this->jobManager, $this->jobRepository);
+		unset($this->jobManager);
 	}
 
 	/**
 	 * @test
 	 */
 	public function waitAndExecuteGetsAndExecutesJobFromQueue (){
-		$queueName = 'TestQueue';
-		$job = new TestAttempsJob();
-		$this->jobManager->queue($queueName, $job);
 
-		$this->assertEquals(1, $this->jobRepository->countByQueueName($queueName));
+		$job = new TestAttempsJob();
+		$this->jobManager->queue($this->queueName, $job);
+
+		$this->assertEquals(1, $this->getDatabaseConnection()->exec_SELECTcountRows('*', self::TABLE, ''));
 
 		// 1st attemp
-		$exception = NULL;
 		try {
 			$queuedJob = $this->jobManager->waitAndExecute($this->queueName);
 		} catch (Exception $exception){}
-		$this->assertInstanceOf(JobQueueException::class, $exception);
-		$this->assertEquals(1, $this->jobRepository->countByAttemps(1));
+		$this->assertEquals(1, $this->getDatabaseConnection()->exec_SELECTcountRows('*', self::TABLE, 'attemps=1'));
 
 		// 2nd attemp
-		$exception = NULL;
 		try {
 			$queuedJob = $this->jobManager->waitAndExecute($this->queueName);
 		} catch (Exception $exception){}
-		$this->assertInstanceOf(Exception::class, $exception);
-		$this->assertEquals(1, $this->jobRepository->countByAttemps(2));
+		$this->assertEquals(1, $this->getDatabaseConnection()->exec_SELECTcountRows('*', self::TABLE, 'attemps=2'));
 
 		// 3rd attemp
 		$queuedJob = $this->jobManager->waitAndExecute($this->queueName);
 		$this->assertInstanceOf(TestAttempsJob::class, $queuedJob);
 		$this->assertTrue($queuedJob->getProcessed());
 
-		$this->assertEquals(0, $this->jobRepository->countByQueueName($queueName));
+		$this->assertEquals(0, $this->getDatabaseConnection()->exec_SELECTcountRows('*', self::TABLE, ''), 'Job is not deleted from database!');
 	}
-
 }

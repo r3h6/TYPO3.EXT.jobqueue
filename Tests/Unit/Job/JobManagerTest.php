@@ -10,10 +10,13 @@ namespace TYPO3\Jobqueue\Tests\Unit\Job;
  *                                                                        *
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
-
+use Exception;
+use DateTime;
+use TYPO3\Jobqueue\Configuration\ExtConf;
 use TYPO3\Jobqueue\Job\JobManager;
 use TYPO3\Jobqueue\Queue\QueueManager;
 use TYPO3\Jobqueue\Queue\Message;
+use TYPO3\Jobqueue\Exception as JobQueueException;
 use TYPO3\Jobqueue\Tests\Unit\Fixtures\TestJob;
 use TYPO3\Jobqueue\Tests\Unit\Fixtures\TestQueue;
 
@@ -34,6 +37,8 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 
 	protected $testQueue;
 
+	protected $extConf;
+
 	protected $queueName = 'TestQueue';
 	/**
 	 *
@@ -48,12 +53,20 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 			->with($this->queueName)
 			->will($this->returnValue($this->testQueue));
 
-
+		// $this->jobManager = $this->getMock(JobManager::class);
 		$this->jobManager = new JobManager();
 		$this->inject($this->jobManager, 'queueManager', $this->queueManager);
+
+		$this->extConf = $this->getMock(ExtConf::class, array('getMaxAttemps'), array(), '', FALSE);
+		$this->inject($this->jobManager, 'extConf', $this->extConf);
 	}
 	public function tearDown (){
-		unset($this->queueManager, $this->jobManager, $this->testQueue);
+		unset(
+			$this->queueManager,
+			$this->jobManager,
+			$this->testQueue,
+			$this->extConf
+		);
 	}
 
 	/**
@@ -64,8 +77,17 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$this->jobManager->queue($this->queueName, $job);
 
 		$messages = $this->jobManager->peek($this->queueName);
-		$this->assertInternalType('array', $messages);
-		$this->assertContainsOnlyInstancesOf(TestJob::class, $messages);
+		$this->assertInternalType('array', $messages, 'Peek does not return messages array!');
+		$this->assertCount(1, $messages, 'Messages does not contain published job.');
+		$this->assertContainsOnlyInstancesOf(TestJob::class, $messages, 'Messages array can only contain TestJob instances.');
+	}
+
+	/**
+	 * @test
+	 */
+	public function delayCallsQueue() {
+		$job = new TestJob();
+		$this->jobManager->delay($this->queueName, 5, $job);
 	}
 
 	/**
@@ -83,24 +105,55 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 
 	/**
 	 * @test
+	 * @expectedException TYPO3\Jobqueue\Exception
+	 * @depends waitAndExecuteGetsAndExecutesJobFromQueue
 	 */
 	public function waitAndExecuteJobThrowsException (){
 		$job = $this->getMock(TestJob::class, array('execute'), array(), '', FALSE);
 		$job
-			->expects($this->once())
+			->expects($this->any())
 			->method('execute')
-			->with(
-				$this->identicalTo($this->testQueue),
-				$this->instanceOf(Message::class)
-			)
-			->will($this->throwException(new Exception()));
-
+			->will($this->returnValue(FALSE));
 		$this->jobManager->queue($this->queueName, $job);
-		try {
-			$queuedJob = $this->jobManager->waitAndExecute($this->queueName);
-		} catch (Exception $exception){
+		$queuedJob = $this->jobManager->waitAndExecute($this->queueName);
+	}
 
+	/**
+	 * @test
+	 * @depends waitAndExecuteJobThrowsException
+	 */
+	public function waitAndExecuteJobAttempsThreeTimes (){
+		$attemps = 3;
+
+		$this->extConf
+			->expects($this->any())
+			->method('getMaxAttemps')
+			->will($this->returnValue($attemps));
+
+		$job = $this->getMock(TestJob::class, array('execute'), array(), '', FALSE);
+		$job
+			->expects($this->any())
+			->method('execute')
+			->will($this->returnValue(FALSE));
+
+		$this->jobManager->initializeObject();
+		$this->jobManager->queue($this->queueName, $job);
+		for ($i = 0; $i < $attemps + 99; $i++){
+			try {
+				$queuedJob = $this->jobManager->waitAndExecute($this->queueName);
+				if ($queuedJob === NULL){
+					break;
+				}
+			} catch (JobQueueException $exception){
+				$this->assertEquals(
+					($i + 1 < $attemps) ? 1: 0,
+					$this->testQueue->count(),
+					'Job is not republished to queue!'
+				);
+			}
 		}
+		$this->assertEquals($attemps, $i, 'To many attemps!');
+		$this->assertEquals(0, $this->testQueue->count(), 'Queue not empty!');
 	}
 
 }

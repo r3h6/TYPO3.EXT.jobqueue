@@ -72,7 +72,8 @@ class TestQueue implements QueueInterface {
 	 * @return void
 	 */
 	public function publish(Message $message) {
-			// TODO Unique identifiers
+		$message->setIdentifier('#' . count($this->messages));
+		$message->setState(Message::STATE_PUBLISHED);
 		$this->messages[] = $message;
 	}
 
@@ -83,6 +84,7 @@ class TestQueue implements QueueInterface {
 	public function waitAndReserve($timeout = 60) {
 		$message = array_shift($this->messages);
 		if ($message !== NULL) {
+			$message->setState(Message::STATE_RESERVED);
 			$this->processing[$message->getIdentifier()] = $message;
 		}
 		return $message;
