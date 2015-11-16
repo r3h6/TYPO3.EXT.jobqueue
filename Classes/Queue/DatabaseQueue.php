@@ -46,6 +46,9 @@ class DatabaseQueue implements QueueInterface {
 			$this->jobRepository->update($job);
 			$this->persistenceManager->persistAll();
 			return $this->decodeJob($job);
+		} else if ($timeout !== NULL) {
+			sleep($timeout);
+			return $this->waitAndReserve();
 		}
 		return NULL;
 	}
@@ -77,6 +80,7 @@ class DatabaseQueue implements QueueInterface {
 		$job->setPayload($message->getPayload());
 		$job->setAttemps($message->getAttemps());
 		$job->setState($message->getState());
+		$job->setStarttime($message->getAvailableAt());
 		return $job;
 	}
 
