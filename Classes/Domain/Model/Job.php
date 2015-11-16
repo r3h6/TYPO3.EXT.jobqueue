@@ -165,7 +165,7 @@ class Job extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	 * @param \DateTime $starttime
 	 * @return \DateTime starttime
 	 */
-	public function setStarttime(\DateTime $starttime) {
+	public function setStarttime(\DateTime $starttime = NULL) {
 		$this->starttime = $starttime;
 	}
 
