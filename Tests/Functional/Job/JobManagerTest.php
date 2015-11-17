@@ -19,9 +19,6 @@ class ItemRepositoryTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase {
 	protected $coreExtensionsToLoad = array('extbase');
 	protected $testExtensionsToLoad = array('typo3conf/ext/jobqueue');
 
-
-
-
 	protected $configurationToUseInTestInstance = [
 		'EXT' => [
 			'extConf' => [

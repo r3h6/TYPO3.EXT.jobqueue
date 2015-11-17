@@ -145,11 +145,9 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 					break;
 				}
 			} catch (JobQueueException $exception){
-				$this->assertEquals(
-					($i + 1 < $attemps) ? 1: 0,
-					$this->testQueue->count(),
-					'Job is not republished to queue!'
-				);
+				if ($i + 1 < $attemps){
+					$this->assertEquals(1, $this->testQueue->count(), 'Job is not republished to queue!');
+				}
 			}
 		}
 		$this->assertEquals($attemps, $i, 'To many attemps!');
