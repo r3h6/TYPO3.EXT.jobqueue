@@ -18,6 +18,12 @@ namespace TYPO3\Jobqueue\Queue;
  */
 interface QueueInterface {
 
+	/**
+	 * Constructor
+	 *
+	 * @param string $name   Queue name
+	 * @param array $options Options passed from TYPO3_CONF_VARS
+	 */
 	public function __construct($name, $options);
 
 	/**
@@ -95,4 +101,7 @@ interface QueueInterface {
 	 */
 	public function count();
 
+
+	public function getName();
+	public function getOptions();
 }

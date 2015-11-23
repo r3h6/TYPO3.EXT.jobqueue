@@ -14,7 +14,7 @@ namespace TYPO3\Jobqueue\Tests\Unit\Queue;
 use TYPO3\Jobqueue\Queue\QueueManager;
 use TYPO3\Jobqueue\Queue\DatabaseQueue;
 use TYPO3\Jobqueue\Configuration\ExtConf;
-use TYPO3\Jobqueue\Tests\Unit\Fixtures\TestQueue;
+use TYPO3\Jobqueue\Queue\RuntimeQueue;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
@@ -46,25 +46,25 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 	 * @test
 	 */
 	public function getQueueCreatesDefaultQueue() {
-		$queueName = 'TestQueue';
+		$queueName = 'RuntimeQueue';
 
 		$this->extConf
 			->expects($this->once())
 			->method('getDefaultQueue')
-			->will($this->returnValue(TestQueue::class));
+			->will($this->returnValue(RuntimeQueue::class));
 
 		$this->objectManager
 			->expects($this->once())
 			->method('get')
 			->with(
-				$this->equalTo(TestQueue::class),
+				$this->equalTo(RuntimeQueue::class),
 				$this->equalTo($queueName),
 				$this->equalTo(NULL)
 			)
-			->will($this->returnValue(new TestQueue($queueName, NULL)));
+			->will($this->returnValue(new RuntimeQueue($queueName, NULL)));
 
-		$testQueue = $this->queueManager->getQueue($queueName);
-		$this->assertInstanceOf(TestQueue::class, $testQueue);
+		$RuntimeQueue = $this->queueManager->getQueue($queueName);
+		$this->assertInstanceOf(RuntimeQueue::class, $RuntimeQueue);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$options = array('foo' => 'bar');
 
 		$GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue'][$queueName] = array(
-			'className' => TestQueue::class,
+			'className' => RuntimeQueue::class,
 			'options' => $options,
 		);
 
@@ -82,13 +82,13 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 			->expects($this->once())
 			->method('get')
 			->with(
-				$this->equalTo(TestQueue::class),
+				$this->equalTo(RuntimeQueue::class),
 				$this->equalTo($queueName),
 				$this->equalTo($options)
 			)
-			->will($this->returnValue(new TestQueue($queueName, $options)));
+			->will($this->returnValue(new RuntimeQueue($queueName, $options)));
 
-		$testQueue = $this->queueManager->getQueue($queueName);
-		$this->assertInstanceOf(TestQueue::class, $testQueue);
+		$RuntimeQueue = $this->queueManager->getQueue($queueName);
+		$this->assertInstanceOf(RuntimeQueue::class, $RuntimeQueue);
 	}
 }

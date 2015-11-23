@@ -12,6 +12,7 @@ namespace TYPO3\Jobqueue\Command;
  *                                                                        */
 
 use TYPO3\Jobqueue\Queue\QueueManager;
+use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 
 /**
  * Job command controller
@@ -19,14 +20,14 @@ use TYPO3\Jobqueue\Queue\QueueManager;
 class JobCommandController extends CommandController {
 
 	/**
-	 * @var JobManager
-	 * @inject TYPO3\Jobqueue\Job\JobManager
+	 * @var \TYPO3\Jobqueue\Job\JobManager
+	 * @inject
 	 */
 	protected $jobManager;
 
 	/**
-	 * @var QueueManager
-	 * @todo
+	 * @var \TYPO3\Jobqueue\Queue\QueueManager
+	 * @inject
 	 */
 	protected $queueManager;
 
@@ -34,12 +35,15 @@ class JobCommandController extends CommandController {
 	 * Work on a queue and execute jobs
 	 *
 	 * @param string $queueName The name of the queue
+	 * @param boolean $daemon Run as deamon
 	 * @return void
 	 */
-	public function workCommand($queueName) {
-		do {
-			$this->jobManager->waitAndExecute($queueName);
-		} while (TRUE);
+	public function workCommand($queueName, $daemon = FALSE) {
+		// do {
+		// 	$this->jobManager->waitAndExecute($queueName);
+		// } while (TRUE);
+
+		$this->outputLine('Hello foobar');
 	}
 
 	/**
@@ -48,6 +52,7 @@ class JobCommandController extends CommandController {
 	 * @param string $queueName The name of the queue
 	 * @param integer $limit Number of jobs to list
 	 * @return void
+	 * @cli
 	 */
 	public function listCommand($queueName, $limit = 1) {
 		$jobs = $this->jobManager->peek($queueName, $limit);
@@ -62,13 +67,25 @@ class JobCommandController extends CommandController {
 		$this->outputLine('(<b>%d total</b>)', array($totalCount));
 	}
 
-
 	/**
-	 * [helpCommand description]
-	 * @return [type] [description]
+	 *
+	 * @param string $queueName The name of the queue
+	 * @return void
 	 * @cli
 	 */
-	public function helpCommand (){
+	public function infoCommand ($queueName){
+		$queue = $this->queueManager->getQueue($queueName);
 
+		$options = $queue->getOptions();
+
+		$this->outputFormatted('Class: %s', [get_class($queue)]);
+		$this->outputFormatted('Options:');
+		if (is_array($options)){
+			foreach ($options as $key => $value){
+				$this->outputFormatted('%s: %s', [$key, $value], 3);
+			}
+		} else {
+			$this->outputFormatted('NULL', [], 3);
+		}
 	}
 }
