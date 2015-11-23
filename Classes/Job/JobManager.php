@@ -122,4 +122,8 @@ class JobManager implements SingletonInterface {
 		}, $messages);
 	}
 
+	public function getQueue ($queueName){
+		return $this->queueManager->getQueue($queueName);
+	}
+
 }

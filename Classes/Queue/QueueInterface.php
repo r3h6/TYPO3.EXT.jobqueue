@@ -101,7 +101,17 @@ interface QueueInterface {
 	 */
 	public function count();
 
-
+	/**
+	 * Returns the queue name.
+	 *
+	 * @return string Queue name
+	 */
 	public function getName();
+
+	/**
+	 * Returns the queue options.
+	 *
+	 * @return array Queue options
+	 */
 	public function getOptions();
 }

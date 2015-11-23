@@ -12,6 +12,7 @@ namespace TYPO3\Jobqueue\Command;
  *                                                                        */
 
 use TYPO3\Jobqueue\Queue\QueueManager;
+use TYPO3\Jobqueue\Queue\Message;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 
 /**
@@ -26,24 +27,15 @@ class JobCommandController extends CommandController {
 	protected $jobManager;
 
 	/**
-	 * @var \TYPO3\Jobqueue\Queue\QueueManager
-	 * @inject
-	 */
-	protected $queueManager;
-
-	/**
 	 * Work on a queue and execute jobs
 	 *
 	 * @param string $queueName The name of the queue
-	 * @param boolean $daemon Run as deamon
 	 * @return void
 	 */
-	public function workCommand($queueName, $daemon = FALSE) {
-		// do {
-		// 	$this->jobManager->waitAndExecute($queueName);
-		// } while (TRUE);
-
-		$this->outputLine('Hello foobar');
+	public function workCommand($queueName) {
+		do {
+			$message = $this->jobManager->waitAndExecute($queueName);
+		} while ($message instanceof Message);
 	}
 
 	/**
@@ -56,7 +48,7 @@ class JobCommandController extends CommandController {
 	 */
 	public function listCommand($queueName, $limit = 1) {
 		$jobs = $this->jobManager->peek($queueName, $limit);
-		$totalCount = $this->queueManager->getQueue($queueName)->count();
+		$totalCount = $this->jobManager->getQueue($queueName)->count();
 		foreach ($jobs as $job) {
 			$this->outputLine('<u>%s</u>', array($job->getLabel()));
 		}
@@ -74,7 +66,7 @@ class JobCommandController extends CommandController {
 	 * @cli
 	 */
 	public function infoCommand ($queueName){
-		$queue = $this->queueManager->getQueue($queueName);
+		$queue = $this->jobManager->getQueue($queueName);
 
 		$options = $queue->getOptions();
 
