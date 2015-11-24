@@ -8,13 +8,7 @@ use TYPO3\Jobqueue\Queue\Message;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-class JobCommandTest extends \TYPO3\CMS\Core\Tests\FunctionalTestCase {
-
-	use \TYPO3\Jobqueue\Tests\Functional\BasicFrontendEnvironmentTrait;
-
-	protected $coreExtensionsToLoad = array('extbase');
-	protected $testExtensionsToLoad = array('typo3conf/ext/jobqueue');
-
+class JobCommandTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 
 	protected $jobManger;
 	protected $commandController;
