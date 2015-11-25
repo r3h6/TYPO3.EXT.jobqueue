@@ -11,7 +11,6 @@ namespace TYPO3\Jobqueue\Queue;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
-use Exception;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\Jobqueue\Exception as JobQueueException;
 
@@ -56,10 +55,14 @@ class QueueManager implements SingletonInterface {
 				$options = isset($settings[$className]['options']) ? $settings[$className]['options']: NULL;
 			}
 
+			if (empty($className)){
+				throw new JobQueueException("No jobqueue class name configuration found.", 1448488276);
+			}
+
 			$queue = $this->objectManager->get($className, $queueName, $options);
 
 			if (!($queue instanceof QueueInterface)){
-				throw new Exception("Queue '$queueName' is not a queue.", 1446318455);
+				throw new JobQueueException("Queue '$queueName' is not a queue.", 1446318455);
 			}
 
 			$this->queues[$queueName] = $queue;
