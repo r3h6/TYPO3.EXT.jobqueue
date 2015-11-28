@@ -11,24 +11,24 @@
  ***************************************************************/
 
 $EM_CONF[$_EXTKEY] = array(
-	'title' => 'Jobqueue',
-	'description' => 'Jobqueue service',
-	'category' => 'services',
-	'author' => 'R3 H6',
-	'author_email' => 'r3h6@outlook.com',
-	'state' => 'beta',
-	'internal' => '',
-	'uploadfolder' => '0',
-	'createDirs' => '',
-	'clearCacheOnLoad' => 0,
-	'version' => '0.0.1',
-	'constraints' => array(
-		'depends' => array(
-			'typo3' => '6.2.0-7.6.99',
-		),
-		'conflicts' => array(
-		),
-		'suggests' => array(
-		),
-	),
+    'title' => 'Jobqueue',
+    'description' => 'Jobqueue service',
+    'category' => 'services',
+    'author' => 'R3 H6',
+    'author_email' => 'r3h6@outlook.com',
+    'state' => 'beta',
+    'internal' => '',
+    'uploadfolder' => '0',
+    'createDirs' => '',
+    'clearCacheOnLoad' => 0,
+    'version' => '0.0.1',
+    'constraints' => array(
+        'depends' => array(
+            'typo3' => '6.2.0-7.6.99',
+        ),
+        'conflicts' => array(
+        ),
+        'suggests' => array(
+        ),
+    ),
 );

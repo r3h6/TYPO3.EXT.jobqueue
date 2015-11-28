@@ -1,4 +1,5 @@
 <?php
+
 namespace TYPO3\Jobqueue;
 
 /*                                                                        *
@@ -12,7 +13,8 @@ namespace TYPO3\Jobqueue;
  *                                                                        */
 
 /**
- * A generic Jobqueue Exception
+ * A generic Jobqueue Exception.
  */
-class Exception extends \Exception {
+class Exception extends \Exception
+{
 }

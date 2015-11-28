@@ -1,4 +1,5 @@
 <?php
+
 namespace TYPO3\Jobqueue\Job;
 
 /*                                                                        *
@@ -19,111 +20,122 @@ use TYPO3\Jobqueue\Queue\Message;
 use TYPO3\Jobqueue\Queue\QueueManager;
 
 /**
- * Job manager
+ * Job manager.
  */
-class JobManager implements SingletonInterface {
+class JobManager implements SingletonInterface
+{
+    /**
+     * @var TYPO3\Jobqueue\Queue\QueueManager
+     * @inject
+     */
+    protected $queueManager;
 
-	/**
-	 * @var TYPO3\Jobqueue\Queue\QueueManager
-	 * @inject
-	 */
-	protected $queueManager;
+    /**
+     * [$maxAttemps description].
+     *
+     * @var int
+     */
+    protected $maxAttemps;
 
-	/**
-	 * [$maxAttemps description]
-	 * @var integer
-	 */
-	protected $maxAttemps;
+    /**
+     * @var TYPO3\Jobqueue\Configuration\ExtConf
+     * @inject
+     */
+    protected $extConf;
 
-	/**
-	 * @var TYPO3\Jobqueue\Configuration\ExtConf
-	 * @inject
-	 */
-	protected $extConf;
+    public function initializeObject()
+    {
+        $this->maxAttemps = (int) $this->extConf->getMaxAttemps();
+    }
 
-	public function initializeObject (){
-		$this->maxAttemps = (int) $this->extConf->getMaxAttemps();
-	}
+    /**
+     * Put a job in the queue.
+     *
+     * @param string       $queueName
+     * @param JobInterface $job
+     */
+    public function queue($queueName, JobInterface $job, DateTime $availableAt = null)
+    {
+        $queue = $this->queueManager->getQueue($queueName);
 
-	/**
-	 * Put a job in the queue
-	 *
-	 * @param string $queueName
-	 * @param JobInterface $job
-	 * @return void
-	 */
-	public function queue($queueName, JobInterface $job, DateTime $availableAt = NULL) {
-		$queue = $this->queueManager->getQueue($queueName);
+        $payload = serialize($job);
+        $message = new Message($payload);
+        $message->setAvailableAt($availableAt);
 
-		$payload = serialize($job);
-		$message = new Message($payload);
-		$message->setAvailableAt($availableAt);
+        $queue->publish($message);
+    }
 
-		$queue->publish($message);
-	}
+    /**
+     * [delay description].
+     *
+     * @param string       $queueName [description]
+     * @param int          $delay     [description]
+     * @param JobInterface $job       [description]
+     */
+    public function delay($queueName, $delay, JobInterface $job)
+    {
+        $this->queue($queueName, $job, new DateTime('@'.time().(int) $delay));
+    }
 
-	/**
-	 * [delay description]
-	 * @param  string       $queueName [description]
-	 * @param  int       $delay     [description]
-	 * @param  JobInterface $job       [description]
-	 * @return void                  [description]
-	 */
-	public function delay ($queueName, $delay, JobInterface $job){
-		$this->queue($queueName, $job, new DateTime('@' . time() . (int) $delay));
-	}
+    /**
+     * Wait for a job in the given queue and execute it
+     * A worker using this method should catch exceptions.
+     *
+     * @param string $queueName
+     * @param int    $timeout
+     *
+     * @return JobInterface The job that was executed or NULL if no job was executed and a timeout occured
+     *
+     * @throws JobQueueException
+     */
+    public function waitAndExecute($queueName, $timeout = null)
+    {
+        $queue = $this->queueManager->getQueue($queueName);
+        $message = $queue->waitAndReserve($timeout);
+        if ($message !== null) {
+            try {
+                $job = unserialize($message->getPayload());
+                if ($job->execute($queue, $message)) {
+                    $queue->finish($message);
 
-	/**
-	 * Wait for a job in the given queue and execute it
-	 * A worker using this method should catch exceptions
-	 *
-	 * @param string $queueName
-	 * @param integer $timeout
-	 * @return JobInterface The job that was executed or NULL if no job was executed and a timeout occured
-	 * @throws JobQueueException
-	 */
-	public function waitAndExecute($queueName, $timeout = NULL) {
-		$queue = $this->queueManager->getQueue($queueName);
-		$message = $queue->waitAndReserve($timeout);
-		if ($message !== NULL) {
-			try {
-				$job = unserialize($message->getPayload());
-				if ($job->execute($queue, $message)) {
-					$queue->finish($message);
-					return $job;
-				} else {
-					throw new JobQueueException('Job execution for message "' . $message->getIdentifier() . '" failed', 1334056583);
-				}
-			} catch (Exception $exception){
-				$attemps = $message->getAttemps() + 1;
-				if ($attemps < $this->maxAttemps){
-					$message->setAttemps($attemps);
-					$queue->finish($message);
-					$queue->publish($message);
-				}
-				throw $exception;
-			}
-		}
-		return NULL;
-	}
+                    return $job;
+                } else {
+                    throw new JobQueueException('Job execution for message "'.$message->getIdentifier().'" failed', 1334056583);
+                }
+            } catch (Exception $exception) {
+                $attemps = $message->getAttemps() + 1;
+                if ($attemps < $this->maxAttemps) {
+                    $message->setAttemps($attemps);
+                    $queue->finish($message);
+                    $queue->publish($message);
+                }
+                throw $exception;
+            }
+        }
 
-	/**
-	 *
-	 * @param string $queueName
-	 * @param integer $limit
-	 * @return array
-	 */
-	public function peek($queueName, $limit = 1) {
-		$queue = $this->queueManager->getQueue($queueName);
-		$messages = $queue->peek($limit);
-		return array_map(function(Message $message) {
-			$job = unserialize($message->getPayload());
-			return $job;
-		}, $messages);
-	}
+        return null;
+    }
 
-	public function getQueue ($queueName){
-		return $this->queueManager->getQueue($queueName);
-	}
+    /**
+     * @param string $queueName
+     * @param int    $limit
+     *
+     * @return array
+     */
+    public function peek($queueName, $limit = 1)
+    {
+        $queue = $this->queueManager->getQueue($queueName);
+        $messages = $queue->peek($limit);
 
+        return array_map(function (Message $message) {
+            $job = unserialize($message->getPayload());
+
+            return $job;
+        }, $messages);
+    }
+
+    public function getQueue($queueName)
+    {
+        return $this->queueManager->getQueue($queueName);
+    }
 }

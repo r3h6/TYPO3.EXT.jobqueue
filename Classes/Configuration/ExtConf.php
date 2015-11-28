@@ -1,4 +1,5 @@
 <?php
+
 namespace TYPO3\Jobqueue\Configuration;
 
 /***************************************************************
@@ -26,39 +27,39 @@ namespace TYPO3\Jobqueue\Configuration;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 /**
- * ExtConf
+ * ExtConf.
  */
-class ExtConf implements \TYPO3\CMS\Core\SingletonInterface {
+class ExtConf implements \TYPO3\CMS\Core\SingletonInterface
+{
+    /**
+     * @var string
+     */
+    const EXT_KEY = 'jobqueue';
 
-	/**
-	 * @var string
-	 */
-	const EXT_KEY = 'jobqueue';
+    /**
+     * @var array
+     */
+    protected $configuration = array();
 
-	/**
-	 * @var array
-	 */
-	protected $configuration = array();
+    public function __construct()
+    {
+        if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXT_KEY])) {
+            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXT_KEY])) {
+                $this->configuration = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXT_KEY];
+            } else {
+                $this->configuration = (array) unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXT_KEY]);
+            }
+        }
+    }
 
-	public function __construct() {
-		if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXT_KEY])) {
-			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXT_KEY])){
-				$this->configuration = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXT_KEY];
-			} else {
-				$this->configuration = (array) unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXT_KEY]);
-			}
-		}
-	}
-
-	public function __call ($method, $args) {
-		$key = strlen($method) > 3 ? lcfirst(substr($method, 3)): NULL;
-		if ($key !== NULL && is_array($this->configuration) && array_key_exists($key, $this->configuration)) {
-			return $this->configuration[$key];
-		} else {
-			return NULL;
-		}
-	}
+    public function __call($method, $args)
+    {
+        $key = (strpos($method, 'get') === 0) ? lcfirst(substr($method, 3)) : null;
+        if ($key !== null && is_array($this->configuration) && array_key_exists($key, $this->configuration)) {
+            return $this->configuration[$key];
+        } else {
+            return null;
+        }
+    }
 }
