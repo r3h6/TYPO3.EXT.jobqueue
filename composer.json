@@ -1,5 +1,5 @@
 {
-    "name": "r3h6/ext-jobqueue",
+    "name": "r3h6/jobqueue",
     "type": "typo3-cms-extension",
     "description": "Job queues for TYPO3.",
     "keywords": [
@@ -16,7 +16,7 @@
     ],
     "license": "GPL-3.0+",
     "require": {
-        "typo3/cms-core": "~6.2.14|>=7.4.0,<8.0"
+        "typo3/cms-core": "~6.2.14|>=7.6.0,<8.0"
     },
     "require-dev": {
         "mikey179/vfsStream": "1.4.*@dev",
@@ -34,8 +34,8 @@
         }
     },
     "replace": {
-        "ext_jobqueue": "self.version",
-        "typo3-ter/ext-jobqueue": "self.version"
+        "jobqueue": "self.version",
+        "typo3-ter/jobqueue": "self.version"
     },
     "config": {
         "vendor-dir": ".Build/vendor",
