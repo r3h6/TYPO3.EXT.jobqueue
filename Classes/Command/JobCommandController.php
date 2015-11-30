@@ -12,7 +12,7 @@ namespace TYPO3\Jobqueue\Command;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
-use TYPO3\Jobqueue\Queue\Message;
+use TYPO3\Jobqueue\Job\JobInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 
 /**
@@ -34,8 +34,8 @@ class JobCommandController extends CommandController
     public function workCommand($queueName)
     {
         do {
-            $message = $this->jobManager->waitAndExecute($queueName);
-        } while ($message instanceof Message);
+            $job = $this->jobManager->waitAndExecute($queueName);
+        } while ($job instanceof JobInterface);
     }
 
     /**

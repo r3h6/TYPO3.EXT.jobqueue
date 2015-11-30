@@ -97,7 +97,6 @@ class JobManager implements SingletonInterface
                 $job = unserialize($message->getPayload());
                 if ($job->execute($queue, $message)) {
                     $queue->finish($message);
-
                     return $job;
                 } else {
                     throw new JobQueueException('Job execution for message "'.$message->getIdentifier().'" failed', 1334056583);
@@ -112,7 +111,6 @@ class JobManager implements SingletonInterface
                 throw $exception;
             }
         }
-
         return null;
     }
 
