@@ -43,9 +43,7 @@ class QueueManager implements SingletonInterface
 
     /**
      * @param string $queueName
-     *
      * @return QueueInterface
-     *
      * @throws JobQueueException
      */
     public function getQueue($queueName)
