@@ -18,7 +18,7 @@ namespace TYPO3\Jobqueue\Queue;
 interface QueueInterface
 {
     /**
-     * Constructor.
+     * Constructor
      *
      * @param string $name    Queue name
      * @param array  $options Options passed from TYPO3_CONF_VARS
