@@ -31,6 +31,9 @@ class Jobs implements SingletonInterface
         /** @var TYPO3\Jobqueue\Command\JobCommandController $jobManager */
         $jobCommandController = GeneralUtility::makeInstance(ObjectManager::class)->get(JobCommandController::class);
 
-        $jobCommandController->workCommand(JobCommandController::ARG_ALL_QUEUES);
+        $queueNames = array_keys($GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue']['TYPO3\\Jobqueue\\Queue\\RuntimeQueue']['queues']);
+        foreach ($queueNames as $queueName) {
+            $jobCommandController->workCommand($queueName);
+        }
     }
 }

@@ -52,6 +52,9 @@ class RuntimeQueue implements QueueInterface
     {
         $this->name = $name;
         $this->options = (array) $options + $this->options;
+
+        // Remember queue name for executing the job with the eofe hook.
+        $GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue']['TYPO3\\Jobqueue\\Queue\\RuntimeQueue']['queues'][$name] = true;
     }
 
     /**
