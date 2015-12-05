@@ -132,8 +132,11 @@ class JobManager implements SingletonInterface
         }, $messages);
     }
 
-    public function getQueue($queueName)
+    /**
+     * @return TYPO3\Jobqueue\Queue\QueueManager
+     */
+    public function getQueueManager()
     {
-        return $this->queueManager->getQueue($queueName);
+        return $this->queueManager;
     }
 }

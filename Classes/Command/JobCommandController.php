@@ -12,14 +12,18 @@ namespace TYPO3\Jobqueue\Command;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Exception;
 use TYPO3\Jobqueue\Job\JobInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Job command controller.
  */
 class JobCommandController extends CommandController
 {
+    const ARG_ALL_QUEUES = 'all';
+
     /**
      * @var \TYPO3\Jobqueue\Job\JobManager
      * @inject
@@ -30,12 +34,24 @@ class JobCommandController extends CommandController
      * Work on a queue and execute jobs.
      *
      * @param string $queueName The name of the queue
+     * @todo Exception handling
      */
     public function workCommand($queueName)
     {
-        do {
-            $job = $this->jobManager->waitAndExecute($queueName);
-        } while ($job instanceof JobInterface);
+        $queueNames = GeneralUtility::trimExplode(',', $queueName);
+        if ($queueName === self::ARG_ALL_QUEUES) {
+            $queueNames = $this->jobManager->getQueueManager()->getQueueNames();
+        }
+
+        foreach ($queueNames as $queueName) {
+            do {
+                try {
+                    $job = $this->jobManager->waitAndExecute($queueName);
+                } catch (Exception $exception) {
+                    throw $exception;
+                }
+            } while ($job instanceof JobInterface);
+        }
     }
 
     /**
@@ -48,7 +64,7 @@ class JobCommandController extends CommandController
     public function listCommand($queueName, $limit = 1)
     {
         $jobs = $this->jobManager->peek($queueName, $limit);
-        $totalCount = $this->jobManager->getQueue($queueName)->count();
+        $totalCount = $this->jobManager->getQueueManager()->getQueue($queueName)->count();
         foreach ($jobs as $job) {
             $this->outputLine('<u>%s</u>', array($job->getLabel()));
         }
@@ -65,7 +81,7 @@ class JobCommandController extends CommandController
      */
     public function infoCommand($queueName)
     {
-        $queue = $this->jobManager->getQueue($queueName);
+        $queue = $this->jobManager->getQueueManager()->getQueue($queueName);
 
         $options = $queue->getOptions();
 

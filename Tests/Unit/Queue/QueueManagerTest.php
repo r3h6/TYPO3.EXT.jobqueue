@@ -66,8 +66,8 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             )
             ->will($this->returnValue(new RuntimeQueue($queueName, null)));
 
-        $RuntimeQueue = $this->queueManager->getQueue($queueName);
-        $this->assertInstanceOf(RuntimeQueue::class, $RuntimeQueue);
+        $runtimeQueue = $this->queueManager->getQueue($queueName);
+        $this->assertInstanceOf(RuntimeQueue::class, $runtimeQueue);
     }
 
     /**
@@ -92,7 +92,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             )
             ->will($this->returnValue(new RuntimeQueue($queueName, $options)));
 
-        $RuntimeQueue = $this->queueManager->getQueue($queueName);
-        $this->assertInstanceOf(RuntimeQueue::class, $RuntimeQueue);
+        $runtimeQueue = $this->queueManager->getQueue($queueName);
+        $this->assertInstanceOf(RuntimeQueue::class, $runtimeQueue);
     }
 }

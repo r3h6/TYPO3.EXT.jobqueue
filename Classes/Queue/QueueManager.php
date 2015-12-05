@@ -14,6 +14,9 @@ namespace TYPO3\Jobqueue\Queue;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\Jobqueue\Exception as JobQueueException;
+use TYPO3\Jobqueue\Utility\ClassNamingUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Queue manager.
@@ -62,6 +65,9 @@ class QueueManager implements SingletonInterface
                 throw new JobQueueException('No jobqueue class name configuration found.', 1448488276);
             }
 
+            $classNameParts = ClassNamingUtility::explode($className);
+            ExtensionManagementUtility::isLoaded(GeneralUtility::camelCaseToLowerCaseUnderscored($classNameParts['extensionName']), true);
+
             $queue = $this->objectManager->get($className, $queueName, $options);
 
             if (!($queue instanceof QueueInterface)) {
@@ -74,8 +80,8 @@ class QueueManager implements SingletonInterface
         return $this->queues[$queueName];
     }
 
-    public function getQueues()
+    public function getQueueNames()
     {
-        return $this->queues;
+        return array_keys($this->queues);
     }
 }
