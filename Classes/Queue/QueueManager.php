@@ -64,6 +64,11 @@ class QueueManager implements SingletonInterface
                 $options = isset($settings[$className]['options']) ? $settings[$className]['options'] : null;
             }
 
+            if (!isset($options['timeout'])) {
+                $defaultTimeout = (int) $this->extConf->getDefaultTimeout();
+                $options['timeout'] = ($defaultTimeout > 0) ? $defaultTimeout: null;
+            }
+
             if (empty($className)) {
                 throw new JobQueueException('No jobqueue class name configuration found.', 1448488276);
             }

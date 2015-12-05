@@ -40,7 +40,7 @@ class RuntimeQueue implements QueueInterface
     /**
      * @var array
      */
-    protected $options;
+    protected $options = array();
 
     /**
      * Constructor
@@ -51,7 +51,7 @@ class RuntimeQueue implements QueueInterface
     public function __construct($name, $options)
     {
         $this->name = $name;
-        $this->options = $options;
+        $this->options = (array) $options + $this->options;
     }
 
     /**

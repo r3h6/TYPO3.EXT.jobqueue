@@ -38,10 +38,11 @@ class JobCommandController extends CommandController
      * Work on a queue and execute jobs.
      *
      * @param string $queueName The name of the queue
+     * @param int    $timeout Timeout in seconds
      * @see JobCommandController::ARG_ALL_QUEUES
      * @todo Exception handling
      */
-    public function workCommand($queueName)
+    public function workCommand($queueName, $timeout = null)
     {
         $queueNames = GeneralUtility::trimExplode(',', $queueName);
         if ($queueName === self::ARG_ALL_QUEUES) {
@@ -51,7 +52,7 @@ class JobCommandController extends CommandController
         foreach ($queueNames as $queueName) {
             do {
                 try {
-                    $job = $this->jobManager->waitAndExecute($queueName);
+                    $job = $this->jobManager->waitAndExecute($queueName, $timeout);
                 } catch (Exception $exception) {
                     throw $exception;
                 }
@@ -87,17 +88,15 @@ class JobCommandController extends CommandController
     public function infoCommand($queueName)
     {
         $queue = $this->jobManager->getQueueManager()->getQueue($queueName);
-
         $options = $queue->getOptions();
 
         $this->outputFormatted('Class: %s', [get_class($queue)]);
-        $this->outputFormatted('Options:');
-        if (is_array($options)) {
+
+        if (is_array($options) && !empty($options)) {
+            $this->outputFormatted('Options:');
             foreach ($options as $key => $value) {
-                $this->outputFormatted('%s: %s', [$key, $value], 3);
+                $this->outputFormatted('<b>%s:</b> %s', [$key, $value], 3);
             }
-        } else {
-            $this->outputFormatted('NULL', [], 3);
         }
     }
 }
