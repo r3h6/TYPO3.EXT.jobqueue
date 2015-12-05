@@ -71,6 +71,9 @@ class JobCommandController extends CommandController
     {
         $jobs = $this->jobManager->peek($queueName, $limit);
         $totalCount = $this->jobManager->getQueueManager()->getQueue($queueName)->count();
+
+        $this->outputFormatted('List jobs for queue "%s"...', [$queueName]);
+
         foreach ($jobs as $job) {
             $this->outputLine('<u>%s</u>', array($job->getLabel()));
         }
@@ -90,12 +93,12 @@ class JobCommandController extends CommandController
         $queue = $this->jobManager->getQueueManager()->getQueue($queueName);
         $options = $queue->getOptions();
 
-        $this->outputFormatted('Class: %s', [get_class($queue)]);
+        $this->outputFormatted('List infos for queue "%s"...', [$queueName]);
+        $this->outputFormatted('<b>Class:</b> %s', [get_class($queue)]);
 
         if (is_array($options) && !empty($options)) {
-            $this->outputFormatted('Options:');
             foreach ($options as $key => $value) {
-                $this->outputFormatted('<b>%s:</b> %s', [$key, $value], 3);
+                $this->outputFormatted('<b>%s:</b> %s', [ucfirst($key), ($value === null) ? 'null': $value]);
             }
         }
     }
