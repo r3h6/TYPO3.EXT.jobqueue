@@ -87,9 +87,4 @@ class QueueManager implements SingletonInterface
 
         return $this->queues[$queueName];
     }
-
-    public function getQueueNames()
-    {
-        return array_keys($this->queues);
-    }
 }

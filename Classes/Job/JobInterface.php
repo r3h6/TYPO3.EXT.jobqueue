@@ -26,11 +26,9 @@ interface JobInterface
     /**
      * Execute the job.
      *
-     * A job should finish itself after successful execution using the queue methods.
-     *
      * @param QueueInterface $queue
      * @param Message        $message The original message
-     * @return bool TRUE if the job was executed successfully and the message should be finished
+     * @return bool TRUE If the job was executed successfully and the message should be finished
      */
     public function execute(QueueInterface $queue, Message $message);
 

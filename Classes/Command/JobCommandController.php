@@ -46,7 +46,7 @@ class JobCommandController extends CommandController
     {
         $queueNames = GeneralUtility::trimExplode(',', $queueName);
         if ($queueName === self::ARG_ALL_QUEUES) {
-            $queueNames = $this->jobManager->getQueueManager()->getQueueNames();
+            throw new Exception("Argument all is not yet implemented!", 1449346695);
         }
 
         foreach ($queueNames as $queueName) {
@@ -61,7 +61,7 @@ class JobCommandController extends CommandController
     }
 
     /**
-     * List queued jobs.
+     * List jobs in a queue.
      *
      * @param string $queueName The name of the queue
      * @param int    $limit     Number of jobs to list
