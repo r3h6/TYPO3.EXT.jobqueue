@@ -3,13 +3,16 @@
 namespace TYPO3\Jobqueue\Queue;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "TYPO3.Jobqueue.Common". *
+ * This script is part of the TYPO3 project - inspiring people to share!  *
  *                                                                        *
- * It is free software; you can redistribute it and/or modify it under    *
- * the terms of the GNU General Public License, either version 3 of the   *
- * License, or (at your option) any later version.                        *
+ * TYPO3 is free software; you can redistribute it and/or modify it under *
+ * the terms of the GNU General Public License version 3 as published by  *
+ * the Free Software Foundation.                                          *
  *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
+ * This script is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHAN-    *
+ * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
+ * Public License for more details.                                       *
  *                                                                        */
 
 use DateTime;
@@ -61,7 +64,7 @@ class Message
     protected $availableAt = null;
 
     /**
-     * Constructor.
+     * Constructor
      *
      * @param string $payload
      * @param string $identifier
@@ -168,7 +171,7 @@ class Message
     /**
      * Get delay.
      *
-     * @return int Delay in seconds
+     * @return int|null Delay in seconds
      */
     public function getDelay()
     {

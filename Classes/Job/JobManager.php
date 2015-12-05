@@ -3,13 +3,16 @@
 namespace TYPO3\Jobqueue\Job;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "TYPO3.Jobqueue.Common". *
+ * This script is part of the TYPO3 project - inspiring people to share!  *
  *                                                                        *
- * It is free software; you can redistribute it and/or modify it under    *
- * the terms of the GNU General Public License, either version 3 of the   *
- * License, or (at your option) any later version.                        *
+ * TYPO3 is free software; you can redistribute it and/or modify it under *
+ * the terms of the GNU General Public License version 3 as published by  *
+ * the Free Software Foundation.                                          *
  *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
+ * This script is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHAN-    *
+ * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
+ * Public License for more details.                                       *
  *                                                                        */
 
 use Exception;
@@ -18,6 +21,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\Jobqueue\Exception as JobQueueException;
 use TYPO3\Jobqueue\Queue\Message;
 use TYPO3\Jobqueue\Queue\QueueManager;
+use TYPO3\Jobqueue\Job\JobInterface;
 
 /**
  * Job manager.
@@ -31,8 +35,6 @@ class JobManager implements SingletonInterface
     protected $queueManager;
 
     /**
-     * [$maxAttemps description].
-     *
      * @var int
      */
     protected $maxAttemps;
@@ -43,6 +45,9 @@ class JobManager implements SingletonInterface
      */
     protected $extConf;
 
+    /**
+     * @return void
+     */
     public function initializeObject()
     {
         $this->maxAttemps = (int) $this->extConf->getMaxAttemps();
@@ -51,8 +56,9 @@ class JobManager implements SingletonInterface
     /**
      * Put a job in the queue.
      *
-     * @param string       $queueName
-     * @param JobInterface $job
+     * @param string       $queueName   Queue name
+     * @param JobInterface $job         The job
+     * @param DateTime     $availableAt Time when the job is available for executing
      */
     public function queue($queueName, JobInterface $job, DateTime $availableAt = null)
     {
@@ -66,27 +72,26 @@ class JobManager implements SingletonInterface
     }
 
     /**
-     * [delay description].
+     * Queues a job with a delay when it will be available for executing.
      *
-     * @param string       $queueName [description]
-     * @param int          $delay     [description]
-     * @param JobInterface $job       [description]
+     * @param string       $queueName Queue name
+     * @param int          $delay     Delay in seconds
+     * @param JobInterface $job       The job
      */
     public function delay($queueName, $delay, JobInterface $job)
     {
-        $this->queue($queueName, $job, new DateTime('@'.time().(int) $delay));
+        $this->queue($queueName, $job, new DateTime('@' . (time() + (int) $delay)));
     }
 
     /**
-     * Wait for a job in the given queue and execute it
+     * Wait for a job in the given queue and execute it.
      * A worker using this method should catch exceptions.
      *
      * @param string $queueName
      * @param int    $timeout
-     *
      * @return JobInterface The job that was executed or NULL if no job was executed and a timeout occured
-     *
      * @throws JobQueueException
+     * @throws Exception
      */
     public function waitAndExecute($queueName, $timeout = null)
     {
@@ -115,10 +120,11 @@ class JobManager implements SingletonInterface
     }
 
     /**
+     * Returns the jobs without removing and executing them.
+     *
      * @param string $queueName
      * @param int    $limit
-     *
-     * @return array
+     * @return array<TYPO3\Jobqueue\Job\JobInterface>
      */
     public function peek($queueName, $limit = 1)
     {
