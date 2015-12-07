@@ -65,7 +65,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             ->with(
                 $this->equalTo(RuntimeQueue::class),
                 $this->equalTo($queueName),
-                $this->equalTo(null)
+                $this->equalTo(['timeout' => null])
             )
             ->will($this->returnValue(new RuntimeQueue($queueName, null)));
 
@@ -78,7 +78,10 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function getQueueCreatesQueueByName()
     {
-        $options = array('foo' => 'bar');
+        $options = array(
+            'foo' => 'bar',
+            'timeout' => null,
+        );
 
         $GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue'][$queueName] = array(
             'className' => RuntimeQueue::class,
