@@ -26,7 +26,7 @@ You can define for each queue different settings over TYPO3_CONF_VARS.
 Creating a job
 --------------
 
-Jobs must implement the ``TYPO3\\Jobqueue\\Job\\JobInterface`` interface.
+Jobs must implement the ``TYPO3\Jobqueue\Job\JobInterface`` interface.
 
 Jobs are getting serialized. It is recommended to use ``__sleep`` to exclude dependencies from serialization and ``__wakeup`` for inject them.
 

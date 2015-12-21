@@ -8,7 +8,6 @@ $GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue']['TYPO3\\Jobqueue\\Queue\\RuntimeQ
     'queues' => []
 ];
 
-
 if (TYPO3_MODE === 'FE') {
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['hook_eofe'][] = 'TYPO3\\Jobqueue\\Hooks\\Jobs->spool';
 }
