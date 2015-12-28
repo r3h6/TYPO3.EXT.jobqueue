@@ -38,7 +38,7 @@ class JobCommandController extends CommandController
      * Work on a queue and execute jobs.
      *
      * @param string      $queueName The name of the queue
-     * @param int|null    $timeout Timeout in seconds or null for no timeout
+     * @param int    $timeout Timeout in seconds or null for no timeout
      * @see JobCommandController::ARG_ALL_QUEUES
      * @todo Exception handling
      */
