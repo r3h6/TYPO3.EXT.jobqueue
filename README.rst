@@ -1,9 +1,10 @@
+.. _start:
+
 ********
 Jobqueue
 ********
 
-This extension provides a simple in-memory queue and a cli/scheduler command to execute jobs.
-
+This extension provides a simple in-memory queue and a cli or scheduler command to execute jobs.
 
 
 Configuration
@@ -22,14 +23,13 @@ You can define for each queue different settings over TYPO3_CONF_VARS.
     ];
 
 
-
 Creating a job
 --------------
 
 Jobs must implement the ``TYPO3\Jobqueue\Job\JobInterface`` interface.
 
-Jobs are getting serialized. It is recommended to use ``__sleep`` to exclude dependencies from serialization and ``__wakeup`` for inject them.
-
+.. note::
+    Jobs are getting serialized. It is recommended to serialize only data and no dependencies because queues have a data limit.
 
 
 Queue a job
