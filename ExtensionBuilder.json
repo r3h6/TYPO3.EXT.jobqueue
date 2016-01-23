@@ -9,13 +9,13 @@
         "emConf": {
             "category": "services",
             "custom_category": "",
-            "dependsOn": "typo3 => 6.2.0-7.6.99\n",
+            "dependsOn": "typo3 => 7.6.0-7.6.99\n",
             "disableLocalization": true,
             "disableVersioning": true,
             "sourceLanguage": "en",
             "state": "beta",
             "targetVersion": "6.2",
-            "version": "0.0.1"
+            "version": "1.0.0"
         },
         "extensionKey": "jobqueue",
         "name": "Jobqueue",
