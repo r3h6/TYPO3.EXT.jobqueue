@@ -21,7 +21,7 @@ use TYPO3\Jobqueue\Queue\QueueInterface;
 /**
  * Job interface.
  */
-interface JobInterface
+interface JobInterface extends \Serializable
 {
     /**
      * Execute the job.

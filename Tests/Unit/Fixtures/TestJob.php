@@ -71,4 +71,25 @@ class TestJob implements JobInterface
     {
         return 'Test Job';
     }
+
+    /**
+     * Serialize
+     *
+     * @return string Serialized data.
+     */
+    public function serialize()
+    {
+        return serialize(['processed' => $this->processed]);
+    }
+
+    /**
+     * Unserialize
+     *
+     * @see    http://php.net/manual/de/class.serializable.php
+     * @param  string $data Serialized data
+     */
+    public function unserialize($data)
+    {
+        list($this->processed) = unserialize($data);
+    }
 }
