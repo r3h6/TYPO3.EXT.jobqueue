@@ -52,13 +52,6 @@ class MemoryQueue implements QueueInterface
     {
         $this->name = $name;
         $this->options = (array) $options + $this->options;
-
-        // Remember queue name for executing the job with the eofe hook.
-        // $GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue'][$name] = [
-        //     'className' => self::class,
-        // ];
-        $GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue']['TYPO3\\Jobqueue\\Queue\\MemoryQueue']['queues'][] = $name;
-        // \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue']);exit;
     }
 
     /**

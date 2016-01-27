@@ -22,6 +22,9 @@ use TYPO3\Jobqueue\Exception as JobQueueException;
 use TYPO3\Jobqueue\Queue\Message;
 use TYPO3\Jobqueue\Queue\QueueManager;
 use TYPO3\Jobqueue\Job\JobInterface;
+use TYPO3\Jobqueue\Command\JobCommandController;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Job manager.
@@ -33,6 +36,12 @@ class JobManager implements SingletonInterface
      * @inject
      */
     protected $queueManager;
+
+    /**
+     * @var TYPO3\Jobqueue\Command\JobCommandController
+     * @inject
+     */
+    protected $jobCommandController;
 
     /**
      * @var int
@@ -144,5 +153,17 @@ class JobManager implements SingletonInterface
     public function getQueueManager()
     {
         return $this->queueManager;
+    }
+
+
+    public function __destruct()
+    {
+        $queues = $this->queueManager->getQueues();
+
+        foreach ($queues as $queue) {
+            if ($queue instanceof \TYPO3\Jobqueue\Queue\MemoryQueue) {
+                $this->jobCommandController->workCommand($queue->getName());
+            }
+        }
     }
 }

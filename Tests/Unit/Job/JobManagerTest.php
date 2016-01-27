@@ -47,18 +47,28 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setUp()
     {
+        // $this->jobManager = $this->getMock(JobManager::class);
+        $this->jobManager = new JobManager();
+
         $this->testQueue = new MemoryQueue($this->queueName, null);
 
-        $this->queueManager = $this->getMock(QueueManager::class, array('getQueue'), array(), '',  false);
+        $this->queueManager = $this->getMock(QueueManager::class, array('getQueue'), array(), '', false);
+
         $this->queueManager
             ->expects($this->any())
             ->method('getQueue')
             ->with($this->queueName)
             ->will($this->returnValue($this->testQueue));
 
-        // $this->jobManager = $this->getMock(JobManager::class);
-        $this->jobManager = new JobManager();
+        $this->queueManager
+            ->expects($this->any())
+            ->method('getQueues')
+            ->will($this->returnValue(array()));
+
         $this->inject($this->jobManager, 'queueManager', $this->queueManager);
+
+        $jobCommandController = $this->getMock(\TYPO3\Jobqueue\Command\JobCommandController::class, array('workCommand'), array(), '', false);
+        $this->inject($this->jobManager, 'jobCommandController', $this->jobCommandController);
 
         $this->extConf = $this->getMock(ExtConf::class, array('getMaxAttemps'), array(), '', false);
         $this->inject($this->jobManager, 'extConf', $this->extConf);
@@ -66,8 +76,8 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function tearDown()
     {
         unset(
-            $this->queueManager,
             $this->jobManager,
+            $this->queueManager,
             $this->testQueue,
             $this->extConf
         );
