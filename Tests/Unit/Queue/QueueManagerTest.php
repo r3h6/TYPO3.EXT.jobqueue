@@ -17,7 +17,7 @@ namespace TYPO3\Jobqueue\Tests\Unit\Queue;
 
 use TYPO3\Jobqueue\Queue\QueueManager;
 use TYPO3\Jobqueue\Configuration\ExtConf;
-use TYPO3\Jobqueue\Queue\RuntimeQueue;
+use TYPO3\Jobqueue\Queue\MemoryQueue;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
@@ -52,25 +52,25 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function getQueueCreatesDefaultQueue()
     {
-        $queueName = 'RuntimeQueue';
+        $queueName = 'MemoryQueue';
 
         $this->extConf
             ->expects($this->once())
             ->method('getDefaultQueue')
-            ->will($this->returnValue(RuntimeQueue::class));
+            ->will($this->returnValue(MemoryQueue::class));
 
         $this->objectManager
             ->expects($this->once())
             ->method('get')
             ->with(
-                $this->equalTo(RuntimeQueue::class),
+                $this->equalTo(MemoryQueue::class),
                 $this->equalTo($queueName),
                 $this->equalTo(['timeout' => null])
             )
-            ->will($this->returnValue(new RuntimeQueue($queueName, null)));
+            ->will($this->returnValue(new MemoryQueue($queueName, null)));
 
         $runtimeQueue = $this->queueManager->getQueue($queueName);
-        $this->assertInstanceOf(RuntimeQueue::class, $runtimeQueue);
+        $this->assertInstanceOf(MemoryQueue::class, $runtimeQueue);
     }
 
     /**
@@ -84,7 +84,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         );
 
         $GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue'][$queueName] = array(
-            'className' => RuntimeQueue::class,
+            'className' => MemoryQueue::class,
             'options' => $options,
         );
 
@@ -92,13 +92,13 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             ->expects($this->once())
             ->method('get')
             ->with(
-                $this->equalTo(RuntimeQueue::class),
+                $this->equalTo(MemoryQueue::class),
                 $this->equalTo($queueName),
                 $this->equalTo($options)
             )
-            ->will($this->returnValue(new RuntimeQueue($queueName, $options)));
+            ->will($this->returnValue(new MemoryQueue($queueName, $options)));
 
         $runtimeQueue = $this->queueManager->getQueue($queueName);
-        $this->assertInstanceOf(RuntimeQueue::class, $runtimeQueue);
+        $this->assertInstanceOf(MemoryQueue::class, $runtimeQueue);
     }
 }

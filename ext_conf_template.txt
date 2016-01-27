@@ -1,5 +1,5 @@
 # cat=jobqueue//20 type=text; label=Default queue: Fully qualified queue name.
-defaultQueue = TYPO3\Jobqueue\Queue\RuntimeQueue
+defaultQueue = TYPO3\Jobqueue\Queue\MemoryQueue
 
 # cat=jobqueue//20 type=int+; label=Default timeout: Default timeout in seconds.
 defaultTimeout = 0

@@ -20,7 +20,7 @@ use TYPO3\Jobqueue\Job\JobManager;
 use TYPO3\Jobqueue\Queue\QueueManager;
 use TYPO3\Jobqueue\Exception as JobQueueException;
 use TYPO3\Jobqueue\Tests\Unit\Fixtures\TestJob;
-use TYPO3\Jobqueue\Queue\RuntimeQueue;
+use TYPO3\Jobqueue\Queue\MemoryQueue;
 
 /**
  * Unit tests for the JobManager.
@@ -41,13 +41,13 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 
     protected $extConf;
 
-    protected $queueName = 'RuntimeQueue';
+    protected $queueName = 'MemoryQueue';
     /**
      *
      */
     public function setUp()
     {
-        $this->testQueue = new RuntimeQueue($this->queueName, null);
+        $this->testQueue = new MemoryQueue($this->queueName, null);
 
         $this->queueManager = $this->getMock(QueueManager::class, array('getQueue'), array(), '',  false);
         $this->queueManager

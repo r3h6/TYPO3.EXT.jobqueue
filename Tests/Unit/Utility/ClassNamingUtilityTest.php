@@ -39,9 +39,9 @@ class ClassNamingUtilityTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
                     'vendorName' => 'TYPO3',
                     'extensionName' => 'Jobqueue',
                     'subpackageKey' => 'Queue',
-                    'className' => 'RuntimeQueue',
+                    'className' => 'MemoryQueue',
                 ],
-                'TYPO3\\Jobqueue\\Queue\\RuntimeQueue'
+                'TYPO3\\Jobqueue\\Queue\\MemoryQueue'
             ],
             [
                 [
