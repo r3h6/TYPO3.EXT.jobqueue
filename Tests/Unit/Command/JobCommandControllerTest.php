@@ -34,7 +34,7 @@ class JobCommandControllerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         // $this->subject = $this->getMock(JobCommandController::class, [], [], '', false);
         $this->subject = new JobCommandController();
 
-        $this->jobManager = $this->getMock(JobManager::class, ['waitAndExecute'], [], '', false);
+        $this->jobManager = $this->getMock(JobManager::class, ['waitAndExecute', '__destruct'], [], '', false);
 
         $this->inject($this->subject, 'jobManager', $this->jobManager);
     }
