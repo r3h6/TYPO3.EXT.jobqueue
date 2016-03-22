@@ -128,7 +128,7 @@ class JobManager implements SingletonInterface
         return null;
     }
 
-    /**
+    /**¦
      * Returns the jobs without removing and executing them.
      *
      * @param string $queueName
