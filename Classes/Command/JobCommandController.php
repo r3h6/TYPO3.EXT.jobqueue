@@ -17,6 +17,7 @@ namespace TYPO3\Jobqueue\Command;
 
 use Exception;
 use TYPO3\Jobqueue\Job\JobInterface;
+use TYPO3\Jobqueue\Job\Worker;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -35,29 +36,61 @@ class JobCommandController extends CommandController
     protected $jobManager;
 
     /**
+     * @var \TYPO3\Jobqueue\Registry
+     * @inject
+     */
+    protected $registry;
+
+    /**
+     * [daemonCommand description]
+     * @param  int  $pid       [description]
+     * @param  string  $queueName [description]
+     * @param  integer $timeout   [description]
+     * @return [type]             [description]
+     */
+    public function daemonCommand($pid, $queueName, $timeout = 0)
+    {
+        // reg daemon:24 time
+        $this->killCommand($pid);
+        $this->workCommand($queueName, $timeout, $pid);
+    }
+
+    public function killCommand($pid)
+    {
+        $this->registry->set('daemon:' . $pid, time());
+    }
+
+    /**
      * Work on a queue and execute jobs.
      *
      * @param string      $queueName The name of the queue
      * @param int    $timeout Timeout in seconds
+     * @param int    $daemon Pid
      * @see JobCommandController::ARG_ALL_QUEUES
      * @todo Exception handling
      */
-    public function workCommand($queueName, $timeout = 0)
+    public function workCommand($queueName, $timeout = 0, $daemon = 0)
     {
-        $queueNames = GeneralUtility::trimExplode(',', $queueName);
-        if ($queueName === self::ARG_ALL_QUEUES) {
-            throw new Exception("Argument all is not yet implemented!", 1449346695);
+        $worker = $this->objectManager->get(Worker::class);
+        if ($daemon === 0) {
+            $worker->run($queueName, $timeout);
+        } else {
+            $worker->daemon($daemon, $queueName, $timeout);
         }
+        // $queueNames = GeneralUtility::trimExplode(',', $queueName);
+        // if ($queueName === self::ARG_ALL_QUEUES) {
+        //     throw new Exception("Argument all is not yet implemented!", 1449346695);
+        // }
 
-        foreach ($queueNames as $queueName) {
-            do {
-                try {
-                    $job = $this->jobManager->waitAndExecute($queueName, $timeout);
-                } catch (Exception $exception) {
-                    throw $exception;
-                }
-            } while ($job instanceof JobInterface);
-        }
+        // foreach ($queueNames as $queueName) {
+        //     do {
+        //         try {
+        //             $job = $this->jobManager->waitAndExecute($queueName, $timeout);
+        //         } catch (Exception $exception) {
+        //             throw $exception;
+        //         }
+        //     } while ($job instanceof JobInterface);
+        // }
     }
 
     /**

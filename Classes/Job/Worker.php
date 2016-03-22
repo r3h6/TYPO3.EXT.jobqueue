@@ -41,14 +41,17 @@ class Worker
      */
     protected $configurationManager;
 
-    public function daemon($queueName, $pid, $timeout = 0)
+    public function daemon($pid, $queueName, $timeout = 0)
     {
         $key = 'daemon:' . $pid;
+
         $lastRestart = $this->registry->get($key);
         $sleep = 10;
-        $memory = ((int) ini_get('memory_limit') * 0.6);
+        $memory = 64;//ini_get('memory_limit');
 
-        $this->getLogger()->notice(sprintf('Run daemon %s', $key));
+        $this->getLogger()->error(sprintf('Run daemon %s', $key));
+                $this->getLogger()->error($memory);
+                $this->getLogger()->error(memory_get_usage());
 
         while (true) {
             if ($this->daemonShouldRun()) {
@@ -57,23 +60,24 @@ class Worker
                 $this->sleep($sleep);
             }
 
-            if ($this->memoryExceeded($memory) || $this->queueShouldRestart($lastRestart)) {
-                $this->getLogger()->notice(sprintf('Stop daemon %s', $key));
+            if ($this->memoryExceeded($memory) || $this->queueShouldRestart($key, $lastRestart)) {
+                $this->getLogger()->error(sprintf('Stop daemon %s', $key));
                 $this->stop();
             }
             break;
         }
+                $this->getLogger()->error(sprintf('Done daemon %s', $key));
     }
 
     public function run($queueName, $timeout = 0)
     {
-        do {
-            try {
-                $job = $this->jobManager->waitAndExecute($queueName, $timeout);
-            } catch (Exception $exception) {
-                throw $exception;
-            }
-        } while ($job instanceof JobInterface);
+        // do {
+        try {
+            $job = $this->jobManager->waitAndExecute($queueName, $timeout);
+        } catch (Exception $exception) {
+            // throw $exception;
+        }
+        // } while ($job instanceof JobInterface);
     }
 
     protected function daemonShouldRun()
@@ -81,7 +85,7 @@ class Worker
         return ((bool) $this->configurationManager->getLocalConfiguration('FE.pageUnavailable_force') === false);
     }
 
-    protected function queueShouldRestart($lastRestart)
+    protected function queueShouldRestart($key, $lastRestart)
     {
         return ($this->registry->get($key) !== $lastRestart);
     }
