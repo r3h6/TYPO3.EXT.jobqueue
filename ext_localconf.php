@@ -13,10 +13,10 @@ if (TYPO3_MODE === 'BE') {
 }
 
 
-// $GLOBALS['TYPO3_CONF_VARS']['LOG']['TYPO3']['Jobqueue']['writerConfiguration'] = array(
-//     \TYPO3\CMS\Core\Log\LogLevel::EMERGENCY => array(
-//         'TYPO3\\CMS\\Core\\Log\\Writer\\FileWriter' => array(
-//            'logFile' => 'typo3temp/logs/jobs.log'
-//         )
-//     )
-// );
+$GLOBALS['TYPO3_CONF_VARS']['LOG']['TYPO3']['Jobqueue']['writerConfiguration'] = array(
+    \TYPO3\CMS\Core\Log\LogLevel::DEBUG => array(
+        'TYPO3\\CMS\\Core\\Log\\Writer\\FileWriter' => array(
+           'logFile' => 'typo3temp/logs/jobs.log'
+        )
+    )
+);

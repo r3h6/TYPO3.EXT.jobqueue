@@ -50,7 +50,7 @@ class Worker
         $sleep = 1;
         $memory = 64;
 
-        $this->getLogger()->error(sprintf('Started daemon in process "%s".', $pid));
+        $this->getLogger()->info(sprintf('Started daemon in process "%s"', $pid));
 
         while (true) {
             if ($this->daemonShouldRun()) {
@@ -59,7 +59,7 @@ class Worker
             $this->sleep($sleep);
 
             if ($this->memoryExceeded($memory) || $this->queueShouldRestart($lastRestart)) {
-                $this->getLogger()->error(sprintf('Stopped daemon in process "%s"', $pid));
+                $this->getLogger()->info(sprintf('Stopped daemon in process "%s"', $pid));
                 $this->stop();
             }
         }
@@ -70,6 +70,9 @@ class Worker
         // do {
         try {
             $job = $this->jobManager->waitAndExecute($queueName, $timeout);
+            if ($job instanceof JobInterface) {
+                $this->getLogger()->info(sprintf('Job "%s" (%s) done by %s', $job->getLabel(), $job->getIdentifier(), getmypid()));
+            }
         } catch (Exception $exception) {
             $this->getLogger()->error($exception->getMessage());
         }
