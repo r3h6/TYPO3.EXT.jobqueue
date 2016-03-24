@@ -17,6 +17,7 @@ namespace TYPO3\Jobqueue\Job;
 
 use TYPO3\Jobqueue\Queue\Message;
 use TYPO3\Jobqueue\Queue\QueueInterface;
+use TYPO3\Jobqueue\Registry;
 
 /**
  * Worker
@@ -41,32 +42,27 @@ class Worker
      */
     protected $configurationManager;
 
-    public function daemon($pid, $queueName, $timeout = 0)
+    public function daemon($queueName, $timeout = 0)
     {
-        $key = 'daemon:' . $pid;
+        $pid = getmypid();
 
-        $lastRestart = $this->registry->get($key);
-        $sleep = 10;
-        $memory = 64;//ini_get('memory_limit');
+        $lastRestart = $this->registry->get(Registry::DAEMON_RESTART_KEY);
+        $sleep = 1;
+        $memory = 64;
 
-        $this->getLogger()->error(sprintf('Run daemon %s', $key));
-                $this->getLogger()->error($memory);
-                $this->getLogger()->error(memory_get_usage());
+        $this->getLogger()->error(sprintf('Started daemon in process "%s".', $pid));
 
         while (true) {
             if ($this->daemonShouldRun()) {
                 $this->run($queueName, $timeout);
-            } else {
-                $this->sleep($sleep);
             }
+            $this->sleep($sleep);
 
-            if ($this->memoryExceeded($memory) || $this->queueShouldRestart($key, $lastRestart)) {
-                $this->getLogger()->error(sprintf('Stop daemon %s', $key));
+            if ($this->memoryExceeded($memory) || $this->queueShouldRestart($lastRestart)) {
+                $this->getLogger()->error(sprintf('Stopped daemon in process "%s"', $pid));
                 $this->stop();
             }
-            break;
         }
-                $this->getLogger()->error(sprintf('Done daemon %s', $key));
     }
 
     public function run($queueName, $timeout = 0)
@@ -75,19 +71,19 @@ class Worker
         try {
             $job = $this->jobManager->waitAndExecute($queueName, $timeout);
         } catch (Exception $exception) {
-            // throw $exception;
+            $this->getLogger()->error($exception->getMessage());
         }
         // } while ($job instanceof JobInterface);
     }
 
     protected function daemonShouldRun()
     {
-        return ((bool) $this->configurationManager->getLocalConfiguration('FE.pageUnavailable_force') === false);
+        return ((bool) $this->configurationManager->getLocalConfiguration('FE.pageUnavailable_force') === true);
     }
 
-    protected function queueShouldRestart($key, $lastRestart)
+    protected function queueShouldRestart($lastRestart)
     {
-        return ($this->registry->get($key) !== $lastRestart);
+        return ($this->registry->get(Registry::DAEMON_RESTART_KEY) !== $lastRestart);
     }
 
     protected function memoryExceeded($memoryLimit)

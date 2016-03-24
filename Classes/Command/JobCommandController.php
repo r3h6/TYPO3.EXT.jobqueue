@@ -18,6 +18,7 @@ namespace TYPO3\Jobqueue\Command;
 use Exception;
 use TYPO3\Jobqueue\Job\JobInterface;
 use TYPO3\Jobqueue\Job\Worker;
+use TYPO3\Jobqueue\Registry;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -42,22 +43,61 @@ class JobCommandController extends CommandController
     protected $registry;
 
     /**
-     * [daemonCommand description]
-     * @param  int  $pid       [description]
+     * Experimental command
+     *
+     * @param  int  $id       [description]
      * @param  string  $queueName [description]
      * @param  integer $timeout   [description]
      * @return [type]             [description]
      */
-    public function daemonCommand($pid, $queueName, $timeout = 0)
+    public function daemonCommand($id, $queueName, $timeout = 0)
     {
-        // reg daemon:24 time
-        $this->killCommand($pid);
-        $this->workCommand($queueName, $timeout, $pid);
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            throw new \BadFunctionCallException("Command 'job:daemon' is not available on windows systems", 1458844709);
+        }
+        if (!is_callable('exec')) {
+            throw new \BadFunctionCallException('Function "exec" is not callable', 1458849505);
+        }
+        if (!is_callable('proc_open')) {
+            throw new \BadFunctionCallException('Function "proc_open" is not callable', 1458849578);
+        }
+        if (!is_callable('proc_get_status')) {
+            throw new \BadFunctionCallException('Function "proc_get_status" is not callable', 1458849585);
+        }
+
+        $status = $this->registry->get('daemon:' . $id);
+        if (is_array($status) && isset($status['pid'])) {
+            exec(sprintf("ps -p %s", $status['pid']), $output);
+            if (count($output) > 1) {
+                $this->outputFormatted('Daemon "%s" is already running in process "%s".', [$id, $status['pid']]);
+                return;
+            }
+        }
+
+        $cliDispatchPath = PATH_site . 'typo3/cli_dispatch.phpsh';
+        $command = "exec php $cliDispatchPath extbase job:work --queue-name=\"$queueName\" --timeout=\"$timeout\" --daemon";
+
+        $pipes = [];
+        $descriptorspec = [];
+        $process = proc_open($command, $descriptorspec, $pipes);
+        if ($process === false) {
+            throw new \RuntimeException(sprintf('Could not open command "%s"!', $command), 1458849054);
+        }
+        $status = proc_get_status($process);
+        if ($status === false) {
+            throw new \RuntimeException('Could not get status!', 1458849124);
+
+        }
+
+        $this->registry->set('daemon:' . $id, $status);
+
+        $this->outputFormatted('Daemon "%s" started in a new process "%s".', [$id, $status['pid']]);
     }
 
-    public function killCommand($pid)
+    public function killCommand()
     {
-        $this->registry->set('daemon:' . $pid, time());
+        $this->registry->set(Registry::DAEMON_RESTART_KEY, time());
+        $this->outputLine('Broadcast kill signal');
     }
 
     /**
@@ -65,32 +105,18 @@ class JobCommandController extends CommandController
      *
      * @param string      $queueName The name of the queue
      * @param int    $timeout Timeout in seconds
-     * @param int    $daemon Pid
+     * @param boolean    $daemon
      * @see JobCommandController::ARG_ALL_QUEUES
      * @todo Exception handling
      */
-    public function workCommand($queueName, $timeout = 0, $daemon = 0)
+    public function workCommand($queueName, $timeout = 0, $daemon = false)
     {
         $worker = $this->objectManager->get(Worker::class);
-        if ($daemon === 0) {
+        if ($daemon === false) {
             $worker->run($queueName, $timeout);
         } else {
-            $worker->daemon($daemon, $queueName, $timeout);
+            $worker->daemon($queueName, $timeout);
         }
-        // $queueNames = GeneralUtility::trimExplode(',', $queueName);
-        // if ($queueName === self::ARG_ALL_QUEUES) {
-        //     throw new Exception("Argument all is not yet implemented!", 1449346695);
-        // }
-
-        // foreach ($queueNames as $queueName) {
-        //     do {
-        //         try {
-        //             $job = $this->jobManager->waitAndExecute($queueName, $timeout);
-        //         } catch (Exception $exception) {
-        //             throw $exception;
-        //         }
-        //     } while ($job instanceof JobInterface);
-        // }
     }
 
     /**
