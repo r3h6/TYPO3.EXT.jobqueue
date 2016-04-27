@@ -17,10 +17,14 @@ namespace TYPO3\Jobqueue;
 
 /**
  * Registry
+ *
+ * API for the sys_registry. This registry doesn't cache the values as the core does.
+ *
+ * @see TYPO3\CMS\Core\Registry
  */
 class Registry implements \TYPO3\CMS\Core\SingletonInterface
 {
-    const DAEMON_RESTART_KEY = 'restart';
+    const DAEMON_KILL_KEY = 'daemon:kill';
 
     protected static $table = 'sys_registry';
     protected static $namespace = 'tx_jobqueue';
@@ -42,6 +46,11 @@ class Registry implements \TYPO3\CMS\Core\SingletonInterface
         }
     }
 
+    public function delete($key)
+    {
+        $this->getDatabasConnection()->exec_DELETEquery(static::$table, $this->getWhere($key));
+    }
+
     public function get($key, $defaultValue = null)
     {
         $row = $this->getDatabasConnection()->exec_SELECTgetSingleRow('entry_value', static::$table, $this->getWhere($key));
@@ -55,6 +64,8 @@ class Registry implements \TYPO3\CMS\Core\SingletonInterface
     {
         return 'entry_namespace = ' . $this->getDatabasConnection()->fullQuoteStr(static::$namespace, static::$table) . ' AND entry_key = ' . $this->getDatabasConnection()->fullQuoteStr($key, static::$table);
     }
+
+
 
     /**
      * @return TYPO3\CMS\Core\Database\DatabaseConnection

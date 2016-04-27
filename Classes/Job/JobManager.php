@@ -38,21 +38,21 @@ class JobManager implements SingletonInterface
     protected $queueManager;
 
     /**
-     * @var TYPO3\Jobqueue\Command\JobCommandController
+     * @var TYPO3\Jobqueue\Configuration\ExtConf
      * @inject
      */
-    protected $jobCommandController;
+    protected $extConf;
+
+    /**
+     * @var TYPO3\Jobqueue\Job\Worker
+     * @inject
+     */
+    protected $worker;
 
     /**
      * @var int
      */
     protected $maxAttemps;
-
-    /**
-     * @var TYPO3\Jobqueue\Configuration\ExtConf
-     * @inject
-     */
-    protected $extConf;
 
     /**
      * @return void
@@ -98,32 +98,33 @@ class JobManager implements SingletonInterface
      *
      * @param string $queueName
      * @param int    $timeout
-     * @return JobInterface The job that was executed or NULL if no job was executed and a timeout occured
+     * @return JobInterface|null The job that was executed or null if no job was executed and a timeout occured
      * @throws JobQueueException
-     * @throws Exception
      */
     public function waitAndExecute($queueName, $timeout = null)
     {
         $queue = $this->queueManager->getQueue($queueName);
         $message = $queue->waitAndReserve($timeout);
         if ($message !== null) {
+            $success = false;
             try {
                 $job = unserialize($message->getPayload());
-                if ($job->execute($queue, $message)) {
-                    $queue->finish($message);
-                    return $job;
-                } else {
-                    throw new JobQueueException('Job execution for message "'.$message->getIdentifier().'" failed', 1334056583);
-                }
+                $success = $job->execute($queue, $message);
             } catch (Exception $exception) {
+                throw new JobQueueException('Job execution for "' . $message->getIdentifier() . '" threw an exception', 1446806185, $exception);
+            } finally {
+                $queue->finish($message);
                 $attemps = $message->getAttemps() + 1;
                 if ($attemps < $this->maxAttemps) {
                     $message->setAttemps($attemps);
-                    $queue->finish($message);
                     $queue->publish($message);
                 }
-                throw $exception;
             }
+
+            if ($success === false) {
+                throw new JobQueueException('Job execution for message "' . $message->getIdentifier() . '" failed', 1334056583);
+            }
+            return $job;
         }
         return null;
     }
@@ -162,7 +163,7 @@ class JobManager implements SingletonInterface
 
         foreach ($queues as $queue) {
             if ($queue instanceof \TYPO3\Jobqueue\Queue\MemoryQueue) {
-                $this->jobCommandController->workCommand($queue->getName());
+                $this->worker->work($queue->getName(), 0, Worker::LIMIT_QUEUE);
             }
         }
     }

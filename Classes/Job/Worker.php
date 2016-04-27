@@ -24,6 +24,15 @@ use TYPO3\Jobqueue\Registry;
  */
 class Worker
 {
+    const LIMIT_INFINITE = 0;
+    const LIMIT_QUEUE = -1;
+
+    /**
+     * @var TYPO3\Jobqueue\Configuration\ExtConf
+     * @inject
+     */
+    protected $extConf;
+
     /**
      * @var \TYPO3\Jobqueue\Job\JobManager
      * @inject
@@ -42,32 +51,43 @@ class Worker
      */
     protected $configurationManager;
 
-    public function daemon($queueName, $timeout = 0)
+    public function work($queueName, $timeout = 0, $limit = 1, $sleep = null, $memoryLimit = null)
     {
-        $pid = getmypid();
+        if ($sleep === null) {
+            $sleep = (int) $this->extConf->getSleep();
+        }
+        if ($memoryLimit === null) {
+            $memoryLimit = (int) $this->extConf->getMemoryLimit();
+        }
+        $sleep = max(1, $sleep);
 
-        $lastRestart = $this->registry->get(Registry::DAEMON_RESTART_KEY);
-        $sleep = 1;
-        $memory = 64;
+        $pid = getmypid();
+        $lastRestart = $this->registry->get(Registry::DAEMON_KILL_KEY);
+
 
         $this->getLogger()->info(sprintf('Started daemon in process "%s"', $pid));
 
-        while (true) {
-            if ($this->daemonShouldRun()) {
-                $this->run($queueName, $timeout);
+        do {
+            if ($this->shouldRun()) {
+                $job = $this->executeNextJob($queueName, $timeout);
+                if ($limit !== self::LIMIT_INFINITE && $job === null) {
+                    break;
+                } else if ($limit > 0 && --$limit < 1) {
+                    break;
+                }
             }
             $this->sleep($sleep);
 
-            if ($this->memoryExceeded($memory) || $this->queueShouldRestart($lastRestart)) {
+            if ($this->memoryExceeded($memoryLimit) || $this->shouldRestart($lastRestart)) {
                 $this->getLogger()->info(sprintf('Stopped daemon in process "%s"', $pid));
-                $this->stop();
+                break;
             }
-        }
+        } while (true);
     }
 
-    public function run($queueName, $timeout = 0)
+    protected function executeNextJob($queueName, $timeout)
     {
-        // do {
+        $job = null;
         try {
             $job = $this->jobManager->waitAndExecute($queueName, $timeout);
             if ($job instanceof JobInterface) {
@@ -76,17 +96,17 @@ class Worker
         } catch (Exception $exception) {
             $this->getLogger()->error($exception->getMessage());
         }
-        // } while ($job instanceof JobInterface);
+        return $job;
     }
 
-    protected function daemonShouldRun()
+    protected function shouldRun()
     {
         return ((bool) $this->configurationManager->getLocalConfiguration('FE.pageUnavailable_force') === true);
     }
 
-    protected function queueShouldRestart($lastRestart)
+    protected function shouldRestart($lastRestart)
     {
-        return ($this->registry->get(Registry::DAEMON_RESTART_KEY) !== $lastRestart);
+        return ($this->registry->get(Registry::DAEMON_KILL_KEY) !== $lastRestart);
     }
 
     protected function memoryExceeded($memoryLimit)
@@ -99,10 +119,6 @@ class Worker
         sleep($sleep);
     }
 
-    protected function stop()
-    {
-        die;
-    }
 
     /**
      * Get class logger

@@ -27,9 +27,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class JobCommandController extends CommandController
 {
-    // Argument 'all' for work command.
-    const ARG_ALL_QUEUES = 'all';
-
     /**
      * @var \TYPO3\Jobqueue\Job\JobManager
      * @inject
@@ -43,19 +40,19 @@ class JobCommandController extends CommandController
     protected $registry;
 
     /**
-     * Experimental command
+     * Starts a worker in a new process (EXPERIMENTAL!).
      *
-     * @param  int  $id       Daemon id
-     * @param  string  $queueName [description]
-     * @param  integer $timeout   [description]
+     * @param  string  $id        daemon id
+     * @param  string  $queueName queue name
+     * @param  integer $timeout   in seconds
+     * @param  integer $sleep     time in seconds a worker sleep
+     * @param  integer $memoryLimit max memory usage in mb
      */
-    public function daemonCommand($id, $queueName, $timeout = 0)
+    public function daemonCommand($id, $queueName, $timeout = 0, $sleep = null, $memoryLimit = null)
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             throw new \BadFunctionCallException("Command 'job:daemon' is not available on windows systems", 1458844709);
         }
-
-        $cliDispatchPath = PATH_site . 'typo3/cli_dispatch.phpsh';
 
         // Check if daemon is already running.
         $status = $this->registry->get('daemon:' . $id);
@@ -66,25 +63,34 @@ class JobCommandController extends CommandController
             }
         }
 
-        // Test if a process can be started and the system gets the right pids.
-        $command = "exec php $cliDispatchPath extbase job:test --id=\"$id\"";
+        // // Path to dispatcher.
+        $cliDispatchPath = PATH_site . 'typo3/cli_dispatch.phpsh';
+
+        // // Test if a process can be started and the system gets the right pid.
+        $command = 'exec php ' . $cliDispatchPath .' extbase job:sleep --id="' . $id . '"';
         $test = $this->processOpen($command);
-        if ($test['pid'] == getmypid()) {
-            throw new \Exception("Daemon not started because pid's are same", 1458897118);
+        if (empty($test['pid']) || $test['pid'] == getmypid()) {
+            throw new \Exception("Method getmypid fails", 1458897118);
         }
         $i = 0;
-        while ($this->registry->get('pid:' . $id) != $test['pid']) {
-            if (++$i > 10) {
-                throw new \Exception("Daemon not started because the system failded to verify the pid's", 1458894146);
+        while ($this->registry->get('daemon:' . $id) != $test['pid']) {
+            if (++$i > 3) {
+                throw new \Exception("Failed to verify the pid", 1458894146);
             }
             sleep(1);
         }
         if (!$this->processExist($test['pid'])) {
-            throw new \Exception("Daemon not started because the system failded to verify the test process", 1458896762);
+            throw new \Exception("Failed to verify that the test process is running", 1458896762);
         }
 
         // Open daemon process
-        $command = "exec php $cliDispatchPath extbase job:work --queue-name=\"$queueName\" --timeout=\"$timeout\" --daemon";
+        $command = 'exec php ' . $cliDispatchPath . ' extbase job:work --queue-name="' . $queueName . '" --timeout="' . $timeout . '" --limit="' . Worker::LIMIT_INFINITE . '"';
+        if ($sleep !== null) {
+            $command .= ' --sleep="' . $sleep. '"';
+        }
+        if ($memoryLimit !== null) {
+            $command .= ' --memory-limit="' . $memoryLimit. '"';
+        }
         $status = $this->processOpen($command);
         $this->registry->set('daemon:' . $id, $status);
         $this->outputFormatted('Daemon "%s" started in a new process "%s".', [$id, $status['pid']]);
@@ -96,11 +102,11 @@ class JobCommandController extends CommandController
         $descriptorspec = [];
         $process = proc_open($command, $descriptorspec, $pipes);
         if ($process === false) {
-            throw new \RuntimeException(sprintf('Could not open command "%s"!', $command), 1458849054);
+            throw new \RuntimeException(sprintf('Could not open process "%s"!', $command), 1458849054);
         }
         $status = proc_get_status($process);
         if ($status === false) {
-            throw new \RuntimeException('Could not get status!', 1458849124);
+            throw new \RuntimeException('Could not get process status!', 1458849124);
 
         }
         return $status;
@@ -113,16 +119,16 @@ class JobCommandController extends CommandController
     }
 
     /**
-     * Test (Internal command only)
-     * @param int $id Daemon id
+     * Zzz... (INTERNAL!).
+     *
+     * This command is used by the daemon command for testing purposes.
+     *
+     * @param string $id
      * @cli
      */
-    public function testCommand($id)
+    public function sleepCommand($id)
     {
-        $pid = getmypid();
-        $key = 'pid:' . $id;
-        $this->registry->set($key, $pid);
-        // $this->outputFormatted('Registred key "%s" with value "%s"', [$key, $pid]);
+        $this->registry->set('daemon:' . $id, getmypid());
         sleep(10);
     }
 
@@ -132,27 +138,32 @@ class JobCommandController extends CommandController
      */
     public function killCommand()
     {
-        $this->registry->set(Registry::DAEMON_RESTART_KEY, time());
-        $this->outputLine('Broadcast signal');
+        $this->registry->set(Registry::DAEMON_KILL_KEY, time());
+        $this->outputLine('Broadcast kill signal');
     }
 
     /**
      * Work on a queue and execute jobs.
      *
-     * @param string      $queueName The name of the queue
-     * @param int    $timeout Timeout in seconds
-     * @param boolean    $daemon
+     * @param  string  $queueName The name of the queue
+     * @param  integer $timeout   in seconds
+     * @param  integer $limit     how many jobs a worker should do
+     * @param  integer $sleep     time in seconds a worker sleep
+     * @param  integer $memoryLimit max memory usage in mb
      * @see JobCommandController::ARG_ALL_QUEUES
      * @todo Exception handling
      */
-    public function workCommand($queueName, $timeout = 0, $daemon = false)
+    public function workCommand($queueName, $timeout = 0, $limit = Worker::LIMIT_QUEUE, $sleep = null, $memoryLimit = null)
     {
-        $worker = $this->objectManager->get(Worker::class);
-        if ($daemon === false) {
-            $worker->run($queueName, $timeout);
-        } else {
-            $worker->daemon($queueName, $timeout);
-        }
+        // $worker = $this->objectManager->get(Worker::class);
+        // if ($daemon === false) {
+        //     $worker->work($queueName, $timeout);
+        // } else {
+        //     $worker->daemon($queueName, $timeout);
+        // }
+        $this->outputLine('work...');
+        //sleep(60);
+        //
     }
 
     /**
@@ -180,6 +191,8 @@ class JobCommandController extends CommandController
     }
 
     /**
+     * Prints information about a queue.
+     *
      * @param string $queueName The name of the queue
      * @cli
      */
@@ -188,7 +201,7 @@ class JobCommandController extends CommandController
         $queue = $this->jobManager->getQueueManager()->getQueue($queueName);
         $options = $queue->getOptions();
 
-        $this->outputFormatted('List infos for queue "%s"...', [$queueName]);
+        $this->outputFormatted('Information for queue "%s"...', [$queueName]);
         $this->outputFormatted('<b>Class:</b> %s', [get_class($queue)]);
 
         if (is_array($options) && !empty($options)) {

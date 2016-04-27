@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-11-08T13:11:57Z" product-name="jobqueue">
+		<header/>
+		<body>
+			<trans-unit id="configuration.defaultQueue">
+				<source>Default queue: Fully qualified queue name.</source>
+			</trans-unit>
+			<trans-unit id="configuration.defaultTimeout">
+				<source>Default timeout: Default timeout in seconds.</source>
+			</trans-unit>
+			<trans-unit id="configuration.maxAttemps">
+				<source>Max attemps: Max attemps of running a job before ditch it.</source>
+			</trans-unit>
+			<trans-unit id="configuration.memoryLimit">
+				<source>Memory limit: Max memory usage in MB.</source>
+			</trans-unit>
+			<trans-unit id="configuration.sleep">
+				<source>Sleep: Time in seconds how long a worker sleeps after executing a job.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
