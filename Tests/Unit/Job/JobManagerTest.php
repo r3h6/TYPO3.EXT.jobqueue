@@ -17,6 +17,8 @@ namespace TYPO3\Jobqueue\Tests\Unit\Job;
 
 use TYPO3\Jobqueue\Configuration\ExtConf;
 use TYPO3\Jobqueue\Job\JobManager;
+use TYPO3\Jobqueue\Job\Worker;
+use TYPO3\Jobqueue\Domain\Repository\FailedJobRepository;
 use TYPO3\Jobqueue\Queue\QueueManager;
 use TYPO3\Jobqueue\Exception as JobQueueException;
 use TYPO3\Jobqueue\Tests\Unit\Fixtures\TestJob;
@@ -30,24 +32,35 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     /**
      * @var QueueManager
      */
-    protected $queueManager;
+    protected $queueManager = null;
 
     /**
      * @var JobManager
      */
-    protected $jobManager;
+    protected $jobManager = null;
 
-    protected $testQueue;
+    /**
+     * @var MemoryQueue
+     */
+    protected $testQueue = null;
 
-    protected $extConf;
+    /**
+     * @var ExtConf
+     */
+    protected $extConf = null;
+
+    /**
+     * @var FailedJobRepository
+     */
+    protected $failedJobRepository = null;
 
     protected $queueName = 'MemoryQueue';
+
     /**
      *
      */
     public function setUp()
     {
-        // $this->jobManager = $this->getMock(JobManager::class);
         $this->jobManager = new JobManager();
 
         $this->testQueue = new MemoryQueue($this->queueName, null);
@@ -67,11 +80,14 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 
         $this->inject($this->jobManager, 'queueManager', $this->queueManager);
 
-        $jobCommandController = $this->getMock(\TYPO3\Jobqueue\Command\JobCommandController::class, array('workCommand'), array(), '', false);
-        $this->inject($this->jobManager, 'jobCommandController', $this->jobCommandController);
+        $worker = $this->getMock(Worker::class, array('work'), array(), '', false);
+        $this->inject($this->jobManager, 'worker', $this->worker);
 
         $this->extConf = $this->getMock(ExtConf::class, array('getMaxAttemps'), array(), '', false);
         $this->inject($this->jobManager, 'extConf', $this->extConf);
+
+        $this->failedJobRepository = $this->getMock(FailedJobRepository::class, array('add'), array(), '', false);
+        $this->inject($this->jobManager, 'failedJobRepository', $this->failedJobRepository);
     }
     public function tearDown()
     {
@@ -157,6 +173,11 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 
         $this->jobManager->initializeObject();
         $this->jobManager->queue($this->queueName, $job);
+
+        $this->failedJobRepository
+            ->expects($this->once())
+            ->method('add');
+
         for ($i = 0; $i < $attemps + 99; ++$i) {
             try {
                 $queuedJob = $this->jobManager->waitAndExecute($this->queueName);

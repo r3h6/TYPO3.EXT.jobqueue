@@ -32,7 +32,7 @@ class FailedJobTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 
     public function setUp()
     {
-        $this->subject = new \TYPO3\Jobqueue\Domain\Model\FailedJob();
+        $this->subject = new \TYPO3\Jobqueue\Domain\Model\FailedJob('TestQueue', 'Payload');
     }
 
     public function tearDown()
@@ -46,7 +46,7 @@ class FailedJobTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function getQueueNameReturnsInitialValueForString()
     {
         $this->assertSame(
-            '',
+            'TestQueue',
             $this->subject->getQueueName()
         );
     }
@@ -71,7 +71,7 @@ class FailedJobTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function getPayloadReturnsInitialValueForString()
     {
         $this->assertSame(
-            '',
+            'Payload',
             $this->subject->getPayload()
         );
     }

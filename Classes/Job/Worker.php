@@ -51,6 +51,15 @@ class Worker
      */
     protected $configurationManager;
 
+    /**
+     * Works on a queue till limit is reached, kill signal has sent or memory is exceeded.
+     * @param  string  $queueName
+     * @param  integer $timeout
+     * @param  integer $limit
+     * @param  integer $sleep
+     * @param  integer $memoryLimit
+     * @return void
+     */
     public function work($queueName, $timeout = 0, $limit = 1, $sleep = null, $memoryLimit = null)
     {
         if ($sleep === null) {
@@ -85,6 +94,13 @@ class Worker
         } while (true);
     }
 
+    /**
+     * Executes the next job.
+     *
+     * @param   string $queueName
+     * @param   int $timeout
+     * @return  JobInterface|null
+     */
     protected function executeNextJob($queueName, $timeout)
     {
         $job = null;
@@ -99,21 +115,44 @@ class Worker
         return $job;
     }
 
+    /**
+     * Checks if frontend is available or not.
+     *
+     * @return boolean     false if not.
+     */
     protected function shouldRun()
     {
         return ((bool) $this->configurationManager->getLocalConfiguration('FE.pageUnavailable_force') === true);
     }
 
+    /**
+     * Returns true if kill signal has been broadcasted.
+     *
+     * @param  mixed $lastRestart
+     * @return boolean
+     */
     protected function shouldRestart($lastRestart)
     {
         return ($this->registry->get(Registry::DAEMON_KILL_KEY) !== $lastRestart);
     }
 
+    /**
+     * Check memory usage against a limit.
+     *
+     * @param  int $memoryLimit max usage in mb
+     * @return boolean true if limit is exceeded
+     */
     protected function memoryExceeded($memoryLimit)
     {
         return (memory_get_usage() / 1024 / 1024) >= $memoryLimit;
     }
 
+    /**
+     * Sleep
+     *
+     * @param  int $sleep  seconds
+     * @return void
+     */
     protected function sleep($sleep)
     {
         sleep($sleep);

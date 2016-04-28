@@ -22,6 +22,7 @@ use TYPO3\Jobqueue\Exception as JobQueueException;
 use TYPO3\Jobqueue\Queue\Message;
 use TYPO3\Jobqueue\Queue\QueueManager;
 use TYPO3\Jobqueue\Job\JobInterface;
+use TYPO3\Jobqueue\Domain\Model\FailedJob;
 use TYPO3\Jobqueue\Command\JobCommandController;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -36,6 +37,12 @@ class JobManager implements SingletonInterface
      * @inject
      */
     protected $queueManager;
+
+    /**
+     * @var TYPO3\Jobqueue\Domain\Repository\FailedJobRepository
+     * @inject
+     */
+    protected $failedJobRepository;
 
     /**
      * @var TYPO3\Jobqueue\Configuration\ExtConf
@@ -118,10 +125,13 @@ class JobManager implements SingletonInterface
                 if ($attemps < $this->maxAttemps) {
                     $message->setAttemps($attemps);
                     $queue->publish($message);
+                } else {
+                    $failedJob = GeneralUtility::makeInstance(FailedJob::class, $message->getPayload(), $queueName);
+                    $this->failedJobRepository->add($failedJob);
                 }
             }
 
-            if ($success === false) {
+            if ($success !== true) {
                 throw new JobQueueException('Job execution for message "' . $message->getIdentifier() . '" failed', 1334056583);
             }
             return $job;

@@ -37,6 +37,19 @@ class FailedJob extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $payload = '';
 
     /**
+     * Create date
+     *
+     * @var \DateTime
+     */
+    protected $crdate = null;
+
+    public function __construct($queueName, $payload)
+    {
+        $this->queueName = $queueName;
+        $this->payload = $payload;
+    }
+
+    /**
      * Returns the queueName
      *
      * @return string $queueName
@@ -76,5 +89,15 @@ class FailedJob extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function setPayload($payload)
     {
         $this->payload = $payload;
+    }
+
+    /**
+     * Gets the crdate
+     *
+     * @return  \DateTime
+     */
+    public function getCrdate()
+    {
+        return $this->crdate;
     }
 }

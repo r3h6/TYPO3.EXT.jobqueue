@@ -143,7 +143,7 @@ class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         $this->worker->work($queueName, $timeout, Worker::LIMIT_QUEUE);
     }
 
-        /**
+    /**
      * @test
      */
     public function stoppWorkWhenMemoryExceeds()
