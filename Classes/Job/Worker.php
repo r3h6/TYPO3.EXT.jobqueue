@@ -109,7 +109,7 @@ class Worker
             if ($job instanceof JobInterface) {
                 $this->getLogger()->info(sprintf('Job "%s" (%s) done by %s', $job->getLabel(), $job->getIdentifier(), getmypid()));
             }
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             $this->getLogger()->error($exception->getMessage());
         }
         return $job;

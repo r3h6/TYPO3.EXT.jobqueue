@@ -121,13 +121,15 @@ class JobManager implements SingletonInterface
                 throw new JobQueueException('Job execution for "' . $message->getIdentifier() . '" threw an exception', 1446806185, $exception);
             } finally {
                 $queue->finish($message);
-                $attemps = $message->getAttemps() + 1;
-                if ($attemps < $this->maxAttemps) {
-                    $message->setAttemps($attemps);
-                    $queue->publish($message);
-                } else {
-                    $failedJob = GeneralUtility::makeInstance(FailedJob::class, $message->getPayload(), $queueName);
-                    $this->failedJobRepository->add($failedJob);
+                if ($success !== true) {
+                    $attemps = $message->getAttemps() + 1;
+                    if ($attemps < $this->maxAttemps) {
+                        $message->setAttemps($attemps);
+                        $queue->publish($message);
+                    } else {
+                        $failedJob = GeneralUtility::makeInstance(FailedJob::class, $queueName, $message->getPayload());
+                        $this->failedJobRepository->add($failedJob);
+                    }
                 }
             }
 

@@ -15,7 +15,6 @@ namespace TYPO3\Jobqueue\Command;
  * Public License for more details.                                       *
  *                                                                        */
 
-use Exception;
 use TYPO3\Jobqueue\Job\JobInterface;
 use TYPO3\Jobqueue\Job\Worker;
 use TYPO3\Jobqueue\Registry;
@@ -31,13 +30,19 @@ class JobCommandController extends CommandController
      * @var \TYPO3\Jobqueue\Job\JobManager
      * @inject
      */
-    protected $jobManager;
+    protected $jobManager = null;
 
     /**
      * @var \TYPO3\Jobqueue\Registry
      * @inject
      */
-    protected $registry;
+    protected $registry = null;
+
+    /**
+     * @var \TYPO3\Jobqueue\Domain\Repository\FailedJobRepository
+     * @inject
+     */
+    protected $failedJobRepository = null;
 
     /**
      * Starts a worker in a new process (EXPERIMENTAL!).
@@ -155,15 +160,10 @@ class JobCommandController extends CommandController
      */
     public function workCommand($queueName, $timeout = 0, $limit = Worker::LIMIT_QUEUE, $sleep = null, $memoryLimit = null)
     {
-        // $worker = $this->objectManager->get(Worker::class);
-        // if ($daemon === false) {
-        //     $worker->work($queueName, $timeout);
-        // } else {
-        //     $worker->daemon($queueName, $timeout);
-        // }
         $this->outputLine('work...');
-        //sleep(60);
-        //
+        /** @var TYPO3\Jobqueue\Job\Worker $worker */
+        $worker = $this->objectManager->get(Worker::class);
+        $worker->work($queueName, $timeout, $limit, $sleep, $memoryLimit);
     }
 
     /**
@@ -208,6 +208,25 @@ class JobCommandController extends CommandController
             foreach ($options as $key => $value) {
                 $this->outputFormatted('<b>%s:</b> %s', [ucfirst($key), ($value === null) ? 'null': $value]);
             }
+        }
+    }
+
+    /**
+     * List failed jobs.
+     *
+     * @param  string $queueName only list failures for this queue
+     * @cli
+     */
+    public function failuresCommand($queueName = null)
+    {
+        if ($queueName === null) {
+            $failedJobs = $this->failedJobRepository->findAll();
+        } else {
+            $failedJobs = $this->failedJobRepository->findByQueueName($queueName);
+        }
+
+        foreach ($failedJobs as $failedJob) {
+            $this->outputFormatted('Queue "%s" at %s', [$failedJob->getQueueName(), $failedJob->getCrdate()->format('d.m.Y H:i:s')]);
         }
     }
 }

@@ -47,6 +47,7 @@ class FailedJob extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->queueName = $queueName;
         $this->payload = $payload;
+        $this->pid = 0;
     }
 
     /**
