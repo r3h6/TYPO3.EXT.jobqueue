@@ -78,8 +78,8 @@ class Worker
 
         do {
             if ($this->shouldRun()) {
-                $job = $this->executeNextJob($queueName, $timeout);
-                if ($limit !== self::LIMIT_INFINITE && $job === null) {
+                $continueWork = $this->waitAndExecute($queueName, $timeout);
+                if ($limit === self::LIMIT_QUEUE && $continueWork === false) {
                     break;
                 } else if ($limit > 0 && --$limit < 1) {
                     break;
@@ -99,20 +99,22 @@ class Worker
      *
      * @param   string $queueName
      * @param   int $timeout
-     * @return  JobInterface|null
+     * @return  boolean true if there are still jobs todo
      */
-    protected function executeNextJob($queueName, $timeout)
+    protected function waitAndExecute($queueName, $timeout)
     {
-        $job = null;
+        $continueWork = true;
         try {
             $job = $this->jobManager->waitAndExecute($queueName, $timeout);
-            if ($job instanceof JobInterface) {
+            if ($job === null) {
+                $continueWork = false;
+            } else {
                 $this->getLogger()->info(sprintf('Job "%s" (%s) done by %s', $job->getLabel(), $job->getIdentifier(), getmypid()));
             }
         } catch (\Exception $exception) {
             $this->getLogger()->error($exception->getMessage());
         }
-        return $job;
+        return $continueWork;
     }
 
     /**

@@ -120,7 +120,7 @@ class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         $limit = 5;
         $job = new TestJob();
         $this->jobManager
-            ->expects($this->exactly(4))
+            ->expects($this->exactly($limit))
             ->method('waitAndExecute')
             ->with($queueName, $timeout)
             ->will($this->onConsecutiveCalls($job, $job, $job, null, null));
