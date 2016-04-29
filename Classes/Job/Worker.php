@@ -52,27 +52,32 @@ class Worker
     protected $configurationManager;
 
     /**
-     * Works on a queue till limit is reached, kill signal has sent or memory is exceeded.
+     * Works on a queue
+     *
+     * Run till limit is reached, kill signal has sent or memory is exceeded.
+     *
      * @param  string  $queueName
      * @param  integer $timeout
      * @param  integer $limit
-     * @param  integer $sleep
-     * @param  integer $memoryLimit
      * @return void
      */
-    public function work($queueName, $timeout = 0, $limit = 1, $sleep = null, $memoryLimit = null)
+    public function work($queueName, $timeout = 0, $limit = 1)
     {
-        if ($sleep === null) {
-            $sleep = (int) $this->extConf->getSleep();
-        }
-        if ($memoryLimit === null) {
-            $memoryLimit = (int) $this->extConf->getMemoryLimit();
-        }
-        $sleep = max(1, $sleep);
+        // if ($sleep === null) {
+        //     $sleep = (int) $this->extConf->getSleep();
+        // }
+        // if ($memoryLimit === null) {
+            // $memoryLimit = (int) $this->extConf->get('memoryLimit');
+        // }
+        // $sleep = max(1, $sleep);
 
         $pid = getmypid();
+        $memoryLimit = (int) $this->extConf->get('memoryLimit');
         $lastRestart = $this->registry->get(Registry::DAEMON_KILL_KEY);
 
+        if ($limit === self::LIMIT_INFINITE) {
+            $timeout = max(1, $timeout);
+        }
 
         $this->getLogger()->info(sprintf('Started daemon in process "%s"', $pid));
 
@@ -85,7 +90,7 @@ class Worker
                     break;
                 }
             }
-            $this->sleep($sleep);
+            // $this->sleep($sleep);
 
             if ($this->memoryExceeded($memoryLimit) || $this->shouldRestart($lastRestart)) {
                 $this->getLogger()->info(sprintf('Stopped daemon in process "%s"', $pid));
@@ -159,7 +164,6 @@ class Worker
     {
         sleep($sleep);
     }
-
 
     /**
      * Get class logger

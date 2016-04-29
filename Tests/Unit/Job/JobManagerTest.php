@@ -23,6 +23,7 @@ use TYPO3\Jobqueue\Queue\QueueManager;
 use TYPO3\Jobqueue\Exception as JobQueueException;
 use TYPO3\Jobqueue\Tests\Unit\Fixtures\TestJob;
 use TYPO3\Jobqueue\Queue\MemoryQueue;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 /**
  * Unit tests for the JobManager.
@@ -62,6 +63,7 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function setUp()
     {
         $this->jobManager = new JobManager();
+        // $this->jobManager = $this->getMock(JobManager::class, array('__destruct', 'emitJobFailed'), array(), '', false);
 
         $this->testQueue = new MemoryQueue($this->queueName, null);
 
@@ -83,11 +85,14 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         $worker = $this->getMock(Worker::class, array('work'), array(), '', false);
         $this->inject($this->jobManager, 'worker', $this->worker);
 
-        $this->extConf = $this->getMock(ExtConf::class, array('getMaxAttemps'), array(), '', false);
+        $this->extConf = $this->getMock(ExtConf::class, array('get'), array(), '', false);
         $this->inject($this->jobManager, 'extConf', $this->extConf);
 
         $this->failedJobRepository = $this->getMock(FailedJobRepository::class, array('add'), array(), '', false);
         $this->inject($this->jobManager, 'failedJobRepository', $this->failedJobRepository);
+
+        $signalSlotDispatcher = $this->getMock(Dispatcher::class, array('dispatch'), array(), '', false);
+        $this->inject($this->jobManager, 'signalSlotDispatcher', $signalSlotDispatcher);
     }
     public function tearDown()
     {
@@ -162,7 +167,7 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 
         $this->extConf
             ->expects($this->any())
-            ->method('getMaxAttemps')
+            ->method('get')
             ->will($this->returnValue($attemps));
 
         $job = $this->getMock(TestJob::class, array('execute'), array(), '', false);

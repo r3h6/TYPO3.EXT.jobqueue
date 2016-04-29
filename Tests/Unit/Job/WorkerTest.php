@@ -59,7 +59,7 @@ class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function setUp()
     {
 
-        $this->worker = $this->getMock(Worker::class, array('getLogger', 'shouldRun', 'memoryExceeded', 'shouldRestart', 'sleep'), array(), '', false);
+        $this->worker = $this->getMock(Worker::class, array('getLogger', 'shouldRun', 'memoryExceeded', 'shouldRestart'), array(), '', false);
 
         $this->registry = $this->getMock(Registry::class, array('get', 'set'), array(), '', false);
         $this->inject($this->worker, 'registry', $this->registry);
@@ -73,12 +73,13 @@ class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             ->expects($this->any())
             ->method('shouldRun')
             ->will($this->returnValue(true));
-        $this->worker
-            ->expects($this->any())
-            ->method('sleep')
-            ->will($this->returnValue(0.1));
+        // $this->worker
+        //     ->expects($this->any())
+        //     ->method('sleep')
+        //     ->will($this->returnValue(0.1));
 
-        $this->extConf = $this->getMock(ExtConf::class, array('getSleep', 'getMemoryLimit'), array(), '', false);
+        $this->extConf = $this->getMock(ExtConf::class, array('get'), array(), '', false);
+        // $this->extConf = new ExtConf();
         $this->inject($this->worker, 'extConf', $this->extConf);
 
         $this->jobManager = $this->getMock(JobManager::class, array('waitAndExecute', '__destruct'), array(), '', false);
@@ -151,6 +152,13 @@ class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         $queueName = 'test' . uniqid();
         $timeout = 3;
         $memoryLimit = 123;
+
+        $this->extConf
+            ->expects($this->any())
+            ->method('get')
+            ->with('memoryLimit')
+            ->will($this->returnValue($memoryLimit));
+
         $job = new TestJob();
         $this->jobManager
             ->expects($this->once())
@@ -162,6 +170,6 @@ class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             ->method('memoryExceeded')
             ->with($memoryLimit)
             ->will($this->returnValue(true));
-        $this->worker->work($queueName, $timeout, Worker::LIMIT_QUEUE, null, $memoryLimit);
+        $this->worker->work($queueName, $timeout, Worker::LIMIT_QUEUE);
     }
 }

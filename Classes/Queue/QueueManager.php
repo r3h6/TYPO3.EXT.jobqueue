@@ -55,17 +55,19 @@ class QueueManager implements SingletonInterface
     public function getQueue($queueName)
     {
         if (!isset($this->queues[$queueName])) {
-            $settings = $GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue'];
-            $className = $this->extConf->getDefaultQueue();
+            $settings = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['jobqueue'];
+            $className = $this->extConf->get('defaultQueue');
+            $options = [];
             if (isset($settings[$queueName])) {
                 $className = isset($settings[$queueName]['className']) ? $settings[$queueName]['className'] : null;
-                $options = isset($settings[$queueName]['options']) ? $settings[$queueName]['options'] : null;
-            } else {
-                $options = isset($settings[$className]['options']) ? $settings[$className]['options'] : null;
+                $options = isset($settings[$queueName]['options']) ? (array) $settings[$queueName]['options'] : [];
+            }
+            if (empty($options)) {
+                $options = isset($settings[$className]['options']) ? (array) $settings[$className]['options'] : [];
             }
 
             if (!isset($options['timeout'])) {
-                $defaultTimeout = (int) $this->extConf->getDefaultTimeout();
+                $defaultTimeout = (int) $this->extConf->get('defaultTimeout');
                 $options['timeout'] = ($defaultTimeout > 0) ? $defaultTimeout: null;
             }
 

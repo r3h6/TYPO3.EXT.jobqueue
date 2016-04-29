@@ -41,13 +41,37 @@ class ExtConf implements \TYPO3\CMS\Core\SingletonInterface
         }
     }
 
+    private function _get($key)
+    {
+        return (is_array($this->configuration) && array_key_exists($key, $this->configuration)) ? $this->configuration[$key]: null;
+    }
+
+    private function _set($key, $value)
+    {
+        $this->configuration[$key] = $value;
+    }
+
     public function __call($method, $args)
     {
-        $key = (strpos($method, 'get') === 0) ? lcfirst(substr($method, 3)) : null;
-        if ($key !== null && is_array($this->configuration) && array_key_exists($key, $this->configuration)) {
-            return $this->configuration[$key];
-        } else {
-            return null;
+        if (method_exists($this, '_' . $method)) {
+            return call_user_func_array([$this, '_' . $method], $args);
         }
+        throw new \RuntimeException("Method $method doesn't exist", 1461958193);
+    }
+
+    // public function __call($method, $args)
+    // {
+    //     $key = (strpos($method, 'get') === 0) ? lcfirst(substr($method, 3)) : null;
+    //     if ($key !== null && is_array($this->configuration) && array_key_exists($key, $this->configuration)) {
+    //         return $this->configuration[$key];
+    //     } else {
+    //         return null;
+    //     }
+    // }
+
+    public static function __callStatic($method, $args)
+    {
+        $instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtConf::class);
+        return call_user_func_array([$instance, $method], $args);
     }
 }

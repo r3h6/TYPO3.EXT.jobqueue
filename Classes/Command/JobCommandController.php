@@ -50,14 +50,10 @@ class JobCommandController extends CommandController
      * @param  string  $id        daemon id
      * @param  string  $queueName queue name
      * @param  integer $timeout   in seconds
-     * @param  integer $sleep     time in seconds a worker sleep
-     * @param  integer $memoryLimit max memory usage in mb
      */
-    public function daemonCommand($id, $queueName, $timeout = 0, $sleep = null, $memoryLimit = null)
+    public function daemonCommand($id, $queueName, $timeout = 0)
     {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            throw new \BadFunctionCallException("Command 'job:daemon' is not available on windows systems", 1458844709);
-        }
+        $this->outputLine('<bg=yellow;options=bold>THIS IS AN EXPERIMENTAL FEATURE!</>');
 
         // Check if daemon is already running.
         $status = $this->registry->get('daemon:' . $id);
@@ -79,7 +75,7 @@ class JobCommandController extends CommandController
         }
         $i = 0;
         while ($this->registry->get('daemon:' . $id) != $test['pid']) {
-            if (++$i > 3) {
+            if (++$i > 10) {
                 throw new \Exception("Failed to verify the pid", 1458894146);
             }
             sleep(1);
@@ -153,17 +149,15 @@ class JobCommandController extends CommandController
      * @param  string  $queueName The name of the queue
      * @param  integer $timeout   in seconds
      * @param  integer $limit     how many jobs a worker should do
-     * @param  integer $sleep     time in seconds a worker sleep
-     * @param  integer $memoryLimit max memory usage in mb
      * @see JobCommandController::ARG_ALL_QUEUES
      * @todo Exception handling
      */
-    public function workCommand($queueName, $timeout = 0, $limit = Worker::LIMIT_QUEUE, $sleep = null, $memoryLimit = null)
+    public function workCommand($queueName, $timeout = 0, $limit = Worker::LIMIT_QUEUE)
     {
         $this->outputLine('work...');
         /** @var TYPO3\Jobqueue\Job\Worker $worker */
         $worker = $this->objectManager->get(Worker::class);
-        $worker->work($queueName, $timeout, $limit, $sleep, $memoryLimit);
+        $worker->work($queueName, $timeout, $limit);
     }
 
     /**
