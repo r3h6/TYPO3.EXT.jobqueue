@@ -10,7 +10,7 @@
 Documentation
 =============
 
-Job queues for TYPO3. This extension provides a simple in-memory queue and a cli or scheduler command to execute jobs.
+Job queues for TYPO3 CMS. This extension provides a simple in-memory queue and a cli or scheduler command to execute jobs.
 It is backport of the flow package Flowpack/jobqueue-common.
 
 

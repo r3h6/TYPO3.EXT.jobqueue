@@ -69,7 +69,7 @@
         "backendModules": [
 
         ],
-        "description": "Jobqueue service",
+        "description": "Job queues for TYPO3 CMS.",
         "emConf": {
             "category": "services",
             "custom_category": "",

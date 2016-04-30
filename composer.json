@@ -1,7 +1,7 @@
 {
     "name": "r3h6/jobqueue",
     "type": "typo3-cms-extension",
-    "description": "Job queues for TYPO3.",
+    "description": "Job queues for TYPO3 CMS.",
     "keywords": [
         "TYPO3",
         "extension",
