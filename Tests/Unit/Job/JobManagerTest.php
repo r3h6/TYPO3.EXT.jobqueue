@@ -124,7 +124,7 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function delayCallsQueue()
     {
         $job = new TestJob();
-        $this->jobManager->delay($this->queueName, 5, $job);
+        $this->jobManager->delay($this->queueName, $job, 5);
     }
 
     /**
