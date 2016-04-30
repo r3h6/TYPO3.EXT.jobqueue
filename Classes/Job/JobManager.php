@@ -95,10 +95,10 @@ class JobManager implements SingletonInterface
      * Queues a job with a delay when it will be available for executing.
      *
      * @param string       $queueName Queue name
-     * @param int          $delay     Delay in seconds
      * @param JobInterface $job       The job
+     * @param int          $delay     Delay in seconds
      */
-    public function delay($queueName, $delay, JobInterface $job)
+    public function delay($queueName, JobInterface $job, $delay)
     {
         $this->queue($queueName, $job, new \DateTime('@' . (time() + (int) $delay)));
     }

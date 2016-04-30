@@ -45,13 +45,13 @@ class JobCommandController extends CommandController
     protected $failedJobRepository = null;
 
     /**
-     * Starts a worker in a new process (EXPERIMENTAL!).
+     * Tries to (re)start a worker in a new process (EXPERIMENTAL!).
      *
      * @param  string  $id        daemon id
-     * @param  string  $queueName queue name
-     * @param  integer $timeout   in seconds
+     * @param  string  $queueName the name of the queue
+     * @param  integer $timeout   time a queue waits for a job in seconds
      */
-    public function daemonCommand($id, $queueName, $timeout = 0)
+    public function daemonCommand($id, $queueName, $timeout = 1)
     {
         $this->outputLine('<bg=yellow;options=bold>THIS IS AN EXPERIMENTAL FEATURE!</>');
 
@@ -97,6 +97,11 @@ class JobCommandController extends CommandController
         $this->outputFormatted('Daemon "%s" started in a new process "%s".', [$id, $status['pid']]);
     }
 
+    /**
+     * Opens a new process for a given command.
+     * @param  string $command to open
+     * @return array           process status
+     */
     protected function processOpen($command)
     {
         $pipes = [];
@@ -113,6 +118,12 @@ class JobCommandController extends CommandController
         return $status;
     }
 
+    /**
+     * Checks if a process for given pid exists.
+     *
+     * @param  string $pid process id
+     * @return boolean
+     */
     protected function processExist($pid)
     {
         exec(sprintf("ps -p %s", $pid), $output);
@@ -146,9 +157,9 @@ class JobCommandController extends CommandController
     /**
      * Work on a queue and execute jobs.
      *
-     * @param  string  $queueName The name of the queue
-     * @param  integer $timeout   in seconds
-     * @param  integer $limit     how many jobs a worker should do
+     * @param  string  $queueName the name of the queue
+     * @param  integer $timeout   time a queue waits for a job in seconds
+     * @param  integer $limit     number of jobs to be done, 0 for all jobs in queue, -1 for work infinite
      * @see JobCommandController::ARG_ALL_QUEUES
      * @todo Exception handling
      */

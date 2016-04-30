@@ -9,6 +9,3 @@ maxAttemps = 3
 
 # cat=jobqueue//40 type=int+; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.memoryLimit
 memoryLimit = 128
-
-# cat=jobqueue//50 type=int+; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.sleep
-sleep = 1

@@ -171,7 +171,7 @@ class Message
     /**
      * Get delay.
      *
-     * @return int|null Delay in seconds
+     * @return int Delay in seconds
      */
     public function getDelay()
     {
@@ -179,6 +179,6 @@ class Message
             return max(0, (int) (new DateTime())->diff($this->availableAt)->format('%s'));
         }
 
-        return null;
+        return 0;
     }
 }

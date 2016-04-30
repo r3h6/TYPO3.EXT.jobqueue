@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Jobqueue',
-	'description' => 'Jobqueue service',
+	'description' => 'Common functionality for a JobQueue in TYPO3.',
 	'category' => 'services',
 	'author' => 'R3 H6',
 	'author_email' => 'r3h6@outlook.com',

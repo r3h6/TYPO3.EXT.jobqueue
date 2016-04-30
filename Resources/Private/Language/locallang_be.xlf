@@ -15,9 +15,6 @@
 			<trans-unit id="configuration.memoryLimit">
 				<source>Memory limit: Max memory usage in MB.</source>
 			</trans-unit>
-			<trans-unit id="configuration.sleep">
-				<source>Sleep: Time in seconds how long a worker sleeps after executing a job.</source>
-			</trans-unit>
 		</body>
 	</file>
 </xliff>

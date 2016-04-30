@@ -52,13 +52,11 @@ class Worker
     protected $configurationManager;
 
     /**
-     * Works on a queue
+     * Work on a queue and execute jobs.
      *
-     * Run till limit is reached, kill signal has sent or memory is exceeded.
-     *
-     * @param  string  $queueName
-     * @param  integer $timeout
-     * @param  integer $limit
+     * @param  string  $queueName the name of the queue
+     * @param  integer $timeout   time a queue waits for a job in seconds
+     * @param  integer $limit     number of jobs to be done, 0 for all jobs in queue, -1 for work infinite
      * @return void
      */
     public function work($queueName, $timeout = 0, $limit = 1)
