@@ -40,5 +40,9 @@
     "config": {
         "vendor-dir": ".Build/vendor",
         "bin-dir": ".Build/bin"
+    },
+    "suggest": {
+        "typo3-ter/jobqueue-database": "Database implementation of job queues for TYPO3 CMS.",
+        "typo3-ter/jobqueue-beanstalkd": "Database implementation of job queues for TYPO3 CMS."
     }
 }

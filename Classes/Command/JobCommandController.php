@@ -48,7 +48,7 @@ class JobCommandController extends CommandController
      * Tries to (re)start a worker in a new process (EXPERIMENTAL!).
      *
      * @param  string  $id        daemon id
-     * @param  string  $queueName the name of the queue
+     * @param  string  $queueName the name of the queue to work on
      * @param  integer $timeout   time a queue waits for a job in seconds
      */
     public function daemonCommand($id, $queueName, $timeout = 1)
@@ -157,7 +157,7 @@ class JobCommandController extends CommandController
     /**
      * Work on a queue and execute jobs.
      *
-     * @param  string  $queueName the name of the queue
+     * @param  string  $queueName the name of the queue to work on
      * @param  integer $timeout   time a queue waits for a job in seconds
      * @param  integer $limit     number of jobs to be done, 0 for all jobs in queue, -1 for work infinite
      * @see JobCommandController::ARG_ALL_QUEUES
@@ -174,7 +174,7 @@ class JobCommandController extends CommandController
     /**
      * List jobs in a queue.
      *
-     * @param string $queueName The name of the queue
+     * @param string $queueName The name of the queue to work on
      * @param int    $limit     Number of jobs to list
      * @cli
      */
@@ -198,7 +198,7 @@ class JobCommandController extends CommandController
     /**
      * Prints information about a queue.
      *
-     * @param string $queueName The name of the queue
+     * @param string $queueName The name of the queue to work on
      * @cli
      */
     public function infoCommand($queueName)

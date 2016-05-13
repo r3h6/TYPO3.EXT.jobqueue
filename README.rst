@@ -11,7 +11,11 @@ Documentation
 =============
 
 Job queues for TYPO3 CMS. This extension provides a simple in-memory queue and a cli or scheduler command to execute jobs.
-It is backport of the flow package Flowpack/jobqueue-common.
+
+This extension is a backport of the flow package Flowpack/jobqueue-common.
+
+.. note::
+    You should install also one of the following extensions ``jobqueue_database`` or ``jobqueue_beanstalkd``.
 
 
 Configuration
@@ -36,9 +40,9 @@ Creating a job
 Jobs must implement the ``TYPO3\Jobqueue\Job\JobInterface`` interface which extends ``Serializable`` itself.
 
 .. tip::
-    Jobs are getting serialized. It is recommended to serialize only data and no dependencies because queues have a data limit.
+    Jobs are getting serialized. It is recommended to serialize only data and no dependencies because queues could have a data limit.
 
-Example:
+``Example:``
 
 .. code-block:: php
         <?php
@@ -91,6 +95,21 @@ Daemon
 
 You can try to use the experimental scheduler task "Jobqueue Job: daemon".
 If you are using something like "upstart" you should call the cli command "extbase job:work" with "--limit=-1".
+
+
+Commands
+--------
+
+``extbase jow:work``
+
+:$queueName:
+    The name of the queue to work on.
+
+:$timeout:
+    Seconds to wait for a job in the queue.
+
+:$limit:
+    Number of jobs to be done, 0 for all jobs in queue, -1 for work infinite
 
 
 Differences to the flow package
