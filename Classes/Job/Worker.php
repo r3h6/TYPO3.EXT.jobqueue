@@ -28,28 +28,35 @@ class Worker
     const LIMIT_QUEUE = -1;
 
     /**
-     * @var TYPO3\Jobqueue\Configuration\ExtConf
+     * @var TYPO3\Jobqueue\Configuration\ExtensionConfiguration
      * @inject
      */
-    protected $extConf;
+    protected $extensionConfiguration = null;
 
     /**
      * @var \TYPO3\Jobqueue\Job\JobManager
      * @inject
      */
-    protected $jobManager;
+    protected $jobManager = null;
 
     /**
      * @var \TYPO3\Jobqueue\Registry
      * @inject
      */
-    protected $registry;
+    protected $registry = null;
 
     /**
      * @var \TYPO3\CMS\Core\Configuration\ConfigurationManager
      * @inject
      */
-    protected $configurationManager;
+    protected $configurationManager = null;
+
+    /**
+     * Logger
+     *
+     * @var \TYPO3\CMS\Core\Log\Logger
+     */
+    protected $logger = null;
 
     /**
      * Work on a queue and execute jobs.
@@ -61,23 +68,14 @@ class Worker
      */
     public function work($queueName, $timeout = 0, $limit = 1)
     {
-        // if ($sleep === null) {
-        //     $sleep = (int) $this->extConf->getSleep();
-        // }
-        // if ($memoryLimit === null) {
-            // $memoryLimit = (int) $this->extConf->get('memoryLimit');
-        // }
-        // $sleep = max(1, $sleep);
+        $this->getLogger()->info(sprintf('Work on queue "%s" in process "%s"', $queueName, getmypid()));
 
-        $pid = getmypid();
-        $memoryLimit = (int) $this->extConf->get('memoryLimit');
+        $memoryLimit = (int) $this->extensionConfiguration->get('memoryLimit');
         $lastRestart = $this->registry->get(Registry::DAEMON_KILL_KEY);
 
         if ($limit === self::LIMIT_INFINITE) {
             $timeout = max(1, $timeout);
         }
-
-        $this->getLogger()->info(sprintf('Started daemon in process "%s"', $pid));
 
         do {
             if ($this->shouldRun()) {
@@ -88,10 +86,9 @@ class Worker
                     break;
                 }
             }
-            // $this->sleep($sleep);
 
             if ($this->memoryExceeded($memoryLimit) || $this->shouldRestart($lastRestart)) {
-                $this->getLogger()->info(sprintf('Stopped daemon in process "%s"', $pid));
+                $this->getLogger()->info(sprintf('Stopped work on queue "%s" in process "%s"', $queueName, getmypid()));
                 break;
             }
         } while (true);
@@ -112,7 +109,7 @@ class Worker
             if ($job === null) {
                 $continueWork = false;
             } else {
-                $this->getLogger()->info(sprintf('Job "%s" (%s) done by %s', $job->getLabel(), $job->getIdentifier(), getmypid()));
+                $this->getLogger()->info(sprintf('Job "%s" (%s) done in process %s', $job->getLabel(), $job->getIdentifier(), getmypid()));
             }
         } catch (\Exception $exception) {
             $this->getLogger()->error($exception->getMessage());
@@ -153,23 +150,15 @@ class Worker
     }
 
     /**
-     * Sleep
-     *
-     * @param  int $sleep  seconds
-     * @return void
-     */
-    protected function sleep($sleep)
-    {
-        sleep($sleep);
-    }
-
-    /**
      * Get class logger
      *
      * @return TYPO3\CMS\Core\Log\Logger
      */
     protected function getLogger()
     {
-        return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+        if ($this->logger === null) {
+            $this->logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Log\\LogManager')->getLogger(__CLASS__);
+        }
+        return $this->logger;
     }
 }
