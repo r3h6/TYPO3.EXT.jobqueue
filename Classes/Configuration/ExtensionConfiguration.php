@@ -16,9 +16,9 @@ namespace TYPO3\Jobqueue\Configuration;
  *                                                                        */
 
 /**
- * ExtConf
+ * ExtensionConfiguration
  */
-class ExtConf implements \TYPO3\CMS\Core\SingletonInterface
+class ExtensionConfiguration implements \TYPO3\CMS\Core\SingletonInterface
 {
     /**
      * @var string
@@ -43,7 +43,12 @@ class ExtConf implements \TYPO3\CMS\Core\SingletonInterface
 
     private function _get($key)
     {
-        return (is_array($this->configuration) && array_key_exists($key, $this->configuration)) ? $this->configuration[$key]: null;
+        $value = (is_array($this->configuration) && array_key_exists($key, $this->configuration)) ? $this->configuration[$key]: null;
+        if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($value)) {
+            return (int) $value;
+        }
+
+        return $value;
     }
 
     private function _set($key, $value)
@@ -59,19 +64,9 @@ class ExtConf implements \TYPO3\CMS\Core\SingletonInterface
         throw new \RuntimeException("Method $method doesn't exist", 1461958193);
     }
 
-    // public function __call($method, $args)
-    // {
-    //     $key = (strpos($method, 'get') === 0) ? lcfirst(substr($method, 3)) : null;
-    //     if ($key !== null && is_array($this->configuration) && array_key_exists($key, $this->configuration)) {
-    //         return $this->configuration[$key];
-    //     } else {
-    //         return null;
-    //     }
-    // }
-
     public static function __callStatic($method, $args)
     {
-        $instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtConf::class);
+        $instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtensionConfiguration::class);
         return call_user_func_array([$instance, $method], $args);
     }
 }

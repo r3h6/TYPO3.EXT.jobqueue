@@ -15,16 +15,16 @@ namespace TYPO3\Jobqueue\Tests\Unit\Configuration;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Configuration\ExtConf;
+use TYPO3\Jobqueue\Configuration\ExtensionConfiguration;
 
 /**
- * Unit tests for the ExtConf.
+ * Unit tests for the ExtensionConfiguration.
  */
-class ExtConfTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class ExtensionConfigurationTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {
     public function setUp()
     {
-        $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][ExtConf::EXT_KEY] = serialize(['test' => 'TYPO3']);
+        $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][ExtensionConfiguration::EXT_KEY] = serialize(['test' => 'TYPO3']);
     }
 
     /**
@@ -32,8 +32,8 @@ class ExtConfTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function getValue()
     {
-        $extConf = new ExtConf();
-        $this->assertEquals('TYPO3', $extConf->get('test'));
+        $extensionConfiguration = new ExtensionConfiguration();
+        $this->assertEquals('TYPO3', $extensionConfiguration->get('test'));
     }
 
     /**
@@ -41,7 +41,7 @@ class ExtConfTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function staticGetValue()
     {
-        $this->assertEquals('TYPO3', ExtConf::get('test'));
+        $this->assertEquals('TYPO3', ExtensionConfiguration::get('test'));
     }
 
     /**
@@ -49,9 +49,9 @@ class ExtConfTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setValue()
     {
-        $extConf = new ExtConf();
-        $extConf->set('test', 'ExtBase');
-        $this->assertEquals('ExtBase', $extConf->get('test'));
+        $extensionConfiguration = new ExtensionConfiguration();
+        $extensionConfiguration->set('test', 'ExtBase');
+        $this->assertEquals('ExtBase', $extensionConfiguration->get('test'));
     }
 
     /**
@@ -59,7 +59,7 @@ class ExtConfTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function staticSetValue()
     {
-        ExtConf::set('test', 'ExtBase');
-        $this->assertEquals('ExtBase', ExtConf::get('test'));
+        ExtensionConfiguration::set('test', 'ExtBase');
+        $this->assertEquals('ExtBase', ExtensionConfiguration::get('test'));
     }
 }

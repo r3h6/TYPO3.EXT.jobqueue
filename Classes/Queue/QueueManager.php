@@ -40,12 +40,12 @@ class QueueManager implements SingletonInterface
     protected $queues = array();
 
     /**
-     * ExtConf.
+     * ExtensionConfiguration.
      *
-     * @var TYPO3\Jobqueue\Configuration\ExtConf
+     * @var TYPO3\Jobqueue\Configuration\ExtensionConfiguration
      * @inject
      */
-    protected $extConf;
+    protected $extensionConfiguration;
 
     /**
      * @param string $queueName
@@ -56,7 +56,7 @@ class QueueManager implements SingletonInterface
     {
         if (!isset($this->queues[$queueName])) {
             $settings = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['jobqueue'];
-            $className = $this->extConf->get('defaultQueue');
+            $className = $this->extensionConfiguration->get('defaultQueue');
             $options = [];
             if (isset($settings[$queueName])) {
                 $className = isset($settings[$queueName]['className']) ? $settings[$queueName]['className'] : null;
@@ -67,7 +67,7 @@ class QueueManager implements SingletonInterface
             }
 
             if (!isset($options['timeout'])) {
-                $defaultTimeout = (int) $this->extConf->get('defaultTimeout');
+                $defaultTimeout = (int) $this->extensionConfiguration->get('defaultTimeout');
                 $options['timeout'] = ($defaultTimeout > 0) ? $defaultTimeout: null;
             }
 

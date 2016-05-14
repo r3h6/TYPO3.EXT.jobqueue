@@ -18,7 +18,7 @@ namespace TYPO3\Jobqueue\Tests\Unit\Job;
 use TYPO3\Jobqueue\Job\Worker;
 use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\Jobqueue\Registry;
-use TYPO3\Jobqueue\Configuration\ExtConf;
+use TYPO3\Jobqueue\Configuration\ExtensionConfiguration;
 use TYPO3\Jobqueue\Job\JobManager;
 use TYPO3\Jobqueue\Tests\Unit\Fixtures\TestJob;
 
@@ -44,9 +44,9 @@ class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     protected $registry;
 
     /**
-     * @var ExtConf
+     * @var ExtensionConfiguration
      */
-    protected $extConf;
+    protected $extensionConfiguration;
 
     /**
      * @var JobManager
@@ -73,14 +73,9 @@ class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             ->expects($this->any())
             ->method('shouldRun')
             ->will($this->returnValue(true));
-        // $this->worker
-        //     ->expects($this->any())
-        //     ->method('sleep')
-        //     ->will($this->returnValue(0.1));
 
-        $this->extConf = $this->getMock(ExtConf::class, array('get'), array(), '', false);
-        // $this->extConf = new ExtConf();
-        $this->inject($this->worker, 'extConf', $this->extConf);
+        $this->extensionConfiguration = $this->getMock(ExtensionConfiguration::class, array('get'), array(), '', false);
+        $this->inject($this->worker, 'extensionConfiguration', $this->extensionConfiguration);
 
         $this->jobManager = $this->getMock(JobManager::class, array('waitAndExecute', '__destruct'), array(), '', false);
         $this->inject($this->worker, 'jobManager', $this->jobManager);
@@ -91,7 +86,7 @@ class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             $this->worker,
             $this->registry,
             $this->logger,
-            $this->extConf
+            $this->extensionConfiguration
         );
     }
 
@@ -153,7 +148,7 @@ class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         $timeout = 3;
         $memoryLimit = 123;
 
-        $this->extConf
+        $this->extensionConfiguration
             ->expects($this->any())
             ->method('get')
             ->with('memoryLimit')

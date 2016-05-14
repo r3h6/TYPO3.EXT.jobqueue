@@ -15,7 +15,7 @@ namespace TYPO3\Jobqueue\Tests\Unit\Job;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Configuration\ExtConf;
+use TYPO3\Jobqueue\Configuration\ExtensionConfiguration;
 use TYPO3\Jobqueue\Job\JobManager;
 use TYPO3\Jobqueue\Job\Worker;
 use TYPO3\Jobqueue\Domain\Repository\FailedJobRepository;
@@ -46,9 +46,9 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     protected $testQueue = null;
 
     /**
-     * @var ExtConf
+     * @var ExtensionConfiguration
      */
-    protected $extConf = null;
+    protected $extensionConfiguration = null;
 
     /**
      * @var FailedJobRepository
@@ -62,12 +62,12 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setUp()
     {
-        $this->jobManager = new JobManager();
-        // $this->jobManager = $this->getMock(JobManager::class, array('__destruct', 'emitJobFailed'), array(), '', false);
+        // $this->jobManager = new JobManager();
+        $this->jobManager = $this->getMock(JobManager::class, array('__destruct'), array(), '', false);
 
         $this->testQueue = new MemoryQueue($this->queueName, null);
 
-        $this->queueManager = $this->getMock(QueueManager::class, array('getQueue'), array(), '', false);
+        $this->queueManager = $this->getMock(QueueManager::class, array('getQueue', 'getQueues'), array(), '', false);
 
         $this->queueManager
             ->expects($this->any())
@@ -85,8 +85,8 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         $worker = $this->getMock(Worker::class, array('work'), array(), '', false);
         $this->inject($this->jobManager, 'worker', $this->worker);
 
-        $this->extConf = $this->getMock(ExtConf::class, array('get'), array(), '', false);
-        $this->inject($this->jobManager, 'extConf', $this->extConf);
+        $this->extensionConfiguration = $this->getMock(ExtensionConfiguration::class, array('get'), array(), '', false);
+        $this->inject($this->jobManager, 'extensionConfiguration', $this->extensionConfiguration);
 
         $this->failedJobRepository = $this->getMock(FailedJobRepository::class, array('add'), array(), '', false);
         $this->inject($this->jobManager, 'failedJobRepository', $this->failedJobRepository);
@@ -100,7 +100,7 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             $this->jobManager,
             $this->queueManager,
             $this->testQueue,
-            $this->extConf
+            $this->extensionConfiguration
         );
     }
 
@@ -165,7 +165,7 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     {
         $attemps = 3;
 
-        $this->extConf
+        $this->extensionConfiguration
             ->expects($this->any())
             ->method('get')
             ->will($this->returnValue($attemps));

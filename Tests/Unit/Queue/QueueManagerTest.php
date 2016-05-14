@@ -16,7 +16,7 @@ namespace TYPO3\Jobqueue\Tests\Unit\Queue;
  *                                                                        */
 
 use TYPO3\Jobqueue\Queue\QueueManager;
-use TYPO3\Jobqueue\Configuration\ExtConf;
+use TYPO3\Jobqueue\Configuration\ExtensionConfiguration;
 use TYPO3\Jobqueue\Queue\MemoryQueue;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -27,7 +27,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {
     protected $queueManager;
 
-    protected $extConf;
+    protected $extensionConfiguration;
 
     protected $objectManager;
 
@@ -35,8 +35,8 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     {
         $this->queueManager = new QueueManager();
 
-        $this->extConf = $this->getMock(ExtConf::class, array('get'), array(), '', false);
-        $this->inject($this->queueManager, 'extConf', $this->extConf);
+        $this->extensionConfiguration = $this->getMock(ExtensionConfiguration::class, array('get'), array(), '', false);
+        $this->inject($this->queueManager, 'extensionConfiguration', $this->extensionConfiguration);
 
         $this->objectManager = $this->getMock(ObjectManager::class, array('get'), array(), '', false);
         $this->inject($this->queueManager, 'objectManager', $this->objectManager);
@@ -44,7 +44,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 
     public function tearDown()
     {
-        unset($this->queueManager, $this->extConf);
+        unset($this->queueManager, $this->extensionConfiguration);
     }
 
     /**
@@ -55,7 +55,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         $queueName = 'MemoryQueue';
         $timeout = null;
 
-        $this->extConf
+        $this->extensionConfiguration
             ->expects($this->exactly(2))
             ->method('get')
             ->withConsecutive(

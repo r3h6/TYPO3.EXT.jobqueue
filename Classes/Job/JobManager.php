@@ -43,10 +43,10 @@ class JobManager implements SingletonInterface
     protected $failedJobRepository = null;
 
     /**
-     * @var TYPO3\Jobqueue\Configuration\ExtConf
+     * @var TYPO3\Jobqueue\Configuration\ExtensionConfiguration
      * @inject
      */
-    protected $extConf = null;
+    protected $extensionConfiguration = null;
 
     /**
      * @var TYPO3\Jobqueue\Job\Worker
@@ -70,7 +70,7 @@ class JobManager implements SingletonInterface
      */
     public function initializeObject()
     {
-        $this->maxAttemps = (int) $this->extConf->get('maxAttemps');
+        $this->maxAttemps = (int) $this->extensionConfiguration->get('maxAttemps');
     }
 
     /**
@@ -173,11 +173,23 @@ class JobManager implements SingletonInterface
         return $this->queueManager;
     }
 
+    /**
+     * Emit job failed signal.
+     *
+     * @param  string  $queueName
+     * @param  Message $message
+     * @return void
+     */
     protected function emitJobFailed($queueName, Message $message)
     {
         $this->signalSlotDispatcher->dispatch(__CLASS__, 'jobFailed', [$queueName, $message]);
     }
 
+    /**
+     * Flush all memory queues.
+     *
+     * @return void
+     */
     protected function flushMemoryQueues()
     {
         $queues = $this->queueManager->getQueues();
