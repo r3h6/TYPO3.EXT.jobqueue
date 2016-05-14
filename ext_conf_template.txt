@@ -1,11 +1,14 @@
-# cat=jobqueue//10 type=text; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.defaultQueue
+# cat=jobqueue//10; type=text; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.defaultQueue
 defaultQueue = TYPO3\Jobqueue\Queue\MemoryQueue
 
-# cat=jobqueue//20 type=int+; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.defaultTimeout
+# cat=jobqueue//20; type=int+; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.defaultTimeout
 defaultTimeout = 0
 
-# cat=jobqueue//30 type=int+; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.maxAttemps
+# cat=jobqueue//30; type=int+; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.maxAttemps
 maxAttemps = 3
 
-# cat=jobqueue//40 type=int+; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.memoryLimit
+# cat=jobqueue//40; type=int+; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.memoryLimit
 memoryLimit = 128
+
+# cat=jobqueue//40; type=options[LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.logLevel.warning=4,LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.logLevel.debug=7]; label=LLL:EXT:jobqueue/Resources/Private/Language/locallang_be.xlf:configuration.logLevel
+logLevel = 4

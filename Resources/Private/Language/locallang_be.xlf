@@ -15,6 +15,15 @@
 			<trans-unit id="configuration.memoryLimit">
 				<source>Memory limit: Max memory usage in MB.</source>
 			</trans-unit>
+			<trans-unit id="configuration.logLevel">
+				<source>Log level: Minimum log level for jobs log.</source>
+			</trans-unit>
+			<trans-unit id="configuration.logLevel.debug">
+				<source>Debug (Development)</source>
+			</trans-unit>
+			<trans-unit id="configuration.logLevel.warning">
+				<source>Warning (Live)</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
