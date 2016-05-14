@@ -15,8 +15,9 @@ namespace TYPO3\Jobqueue\Command;
  * Public License for more details.                                       *
  *                                                                        */
 
-use Exception;
 use TYPO3\Jobqueue\Job\JobInterface;
+use TYPO3\Jobqueue\Job\Worker;
+use TYPO3\Jobqueue\Registry;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -25,45 +26,155 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class JobCommandController extends CommandController
 {
-    // Argument 'all' for work command.
-    const ARG_ALL_QUEUES = 'all';
-
     /**
      * @var \TYPO3\Jobqueue\Job\JobManager
      * @inject
      */
-    protected $jobManager;
+    protected $jobManager = null;
+
+    /**
+     * @var \TYPO3\Jobqueue\Registry
+     * @inject
+     */
+    protected $registry = null;
+
+    /**
+     * @var \TYPO3\Jobqueue\Domain\Repository\FailedJobRepository
+     * @inject
+     */
+    protected $failedJobRepository = null;
+
+    /**
+     * Tries to (re)start a worker in a new process (EXPERIMENTAL!).
+     *
+     * @param  string  $id        daemon id
+     * @param  string  $queueName the name of the queue to work on
+     * @param  integer $timeout   time a queue waits for a job in seconds
+     */
+    public function daemonCommand($id, $queueName, $timeout = 1)
+    {
+        $this->outputLine('<bg=yellow;options=bold>THIS IS AN EXPERIMENTAL FEATURE!</>');
+
+        // Check if daemon is already running.
+        $status = $this->registry->get('daemon:' . $id);
+        if (is_array($status) && isset($status['pid'])) {
+            if ($this->processExist($status['pid'])) {
+                $this->outputFormatted('Daemon "%s" is already running in process "%s".', [$id, $status['pid']]);
+                return;
+            }
+        }
+
+        // // Path to dispatcher.
+        $cliDispatchPath = PATH_site . 'typo3/cli_dispatch.phpsh';
+
+        // // Test if a process can be started and the system gets the right pid.
+        $command = 'exec php ' . $cliDispatchPath .' extbase job:sleep --id="' . $id . '"';
+        $test = $this->processOpen($command);
+        if (empty($test['pid']) || $test['pid'] == getmypid()) {
+            throw new \Exception("Method getmypid fails", 1458897118);
+        }
+        $i = 0;
+        while ($this->registry->get('daemon:' . $id) != $test['pid']) {
+            if (++$i > 10) {
+                throw new \Exception("Failed to verify the pid", 1458894146);
+            }
+            sleep(1);
+        }
+        if (!$this->processExist($test['pid'])) {
+            throw new \Exception("Failed to verify that the test process is running", 1458896762);
+        }
+
+        // Open daemon process
+        $command = 'exec php ' . $cliDispatchPath . ' extbase job:work --queue-name="' . $queueName . '" --timeout="' . $timeout . '" --limit="' . Worker::LIMIT_INFINITE . '"';
+        if ($sleep !== null) {
+            $command .= ' --sleep="' . $sleep. '"';
+        }
+        if ($memoryLimit !== null) {
+            $command .= ' --memory-limit="' . $memoryLimit. '"';
+        }
+        $status = $this->processOpen($command);
+        $this->registry->set('daemon:' . $id, $status);
+        $this->outputFormatted('Daemon "%s" started in a new process "%s".', [$id, $status['pid']]);
+    }
+
+    /**
+     * Opens a new process for a given command.
+     * @param  string $command to open
+     * @return array           process status
+     */
+    protected function processOpen($command)
+    {
+        $pipes = [];
+        $descriptorspec = [];
+        $process = proc_open($command, $descriptorspec, $pipes);
+        if ($process === false) {
+            throw new \RuntimeException(sprintf('Could not open process "%s"!', $command), 1458849054);
+        }
+        $status = proc_get_status($process);
+        if ($status === false) {
+            throw new \RuntimeException('Could not get process status!', 1458849124);
+
+        }
+        return $status;
+    }
+
+    /**
+     * Checks if a process for given pid exists.
+     *
+     * @param  string $pid process id
+     * @return boolean
+     */
+    protected function processExist($pid)
+    {
+        exec(sprintf("ps -p %s", $pid), $output);
+        return (count($output) > 1);
+    }
+
+    /**
+     * Zzz... (INTERNAL!).
+     *
+     * This command is used by the daemon command for testing purposes.
+     *
+     * @param string $id
+     * @cli
+     */
+    public function sleepCommand($id)
+    {
+        $this->registry->set('daemon:' . $id, getmypid());
+        sleep(10);
+    }
+
+    /**
+     * Sends signal for stop all running daemon processes.
+     * @cli
+     */
+    public function killCommand()
+    {
+        $this->registry->set(Registry::DAEMON_KILL_KEY, time());
+        $this->outputLine('Broadcast kill signal');
+    }
 
     /**
      * Work on a queue and execute jobs.
      *
-     * @param string      $queueName The name of the queue
-     * @param int    $timeout Timeout in seconds
+     * @param  string  $queueName the name of the queue to work on
+     * @param  integer $timeout   time a queue waits for a job in seconds
+     * @param  integer $limit     number of jobs to be done, 0 for all jobs in queue, -1 for work infinite
      * @see JobCommandController::ARG_ALL_QUEUES
      * @todo Exception handling
      */
-    public function workCommand($queueName, $timeout = 0)
+    public function workCommand($queueName, $timeout = 0, $limit = Worker::LIMIT_QUEUE)
     {
-        $queueNames = GeneralUtility::trimExplode(',', $queueName);
-        if ($queueName === self::ARG_ALL_QUEUES) {
-            throw new Exception("Argument all is not yet implemented!", 1449346695);
-        }
-
-        foreach ($queueNames as $queueName) {
-            do {
-                try {
-                    $job = $this->jobManager->waitAndExecute($queueName, $timeout);
-                } catch (Exception $exception) {
-                    throw $exception;
-                }
-            } while ($job instanceof JobInterface);
-        }
+        $this->outputLine('work...');
+        /** @var TYPO3\Jobqueue\Job\Worker $worker */
+        $worker = $this->objectManager->get(Worker::class);
+        $worker->work($queueName, $timeout, $limit);
     }
 
     /**
      * List jobs in a queue.
      *
-     * @param string $queueName The name of the queue
+     * @param string $queueName The name of the queue to work on
      * @param int    $limit     Number of jobs to list
      * @cli
      */
@@ -85,7 +196,9 @@ class JobCommandController extends CommandController
     }
 
     /**
-     * @param string $queueName The name of the queue
+     * Prints information about a queue.
+     *
+     * @param string $queueName The name of the queue to work on
      * @cli
      */
     public function infoCommand($queueName)
@@ -93,13 +206,32 @@ class JobCommandController extends CommandController
         $queue = $this->jobManager->getQueueManager()->getQueue($queueName);
         $options = $queue->getOptions();
 
-        $this->outputFormatted('List infos for queue "%s"...', [$queueName]);
+        $this->outputFormatted('Information for queue "%s"...', [$queueName]);
         $this->outputFormatted('<b>Class:</b> %s', [get_class($queue)]);
 
         if (is_array($options) && !empty($options)) {
             foreach ($options as $key => $value) {
                 $this->outputFormatted('<b>%s:</b> %s', [ucfirst($key), ($value === null) ? 'null': $value]);
             }
+        }
+    }
+
+    /**
+     * List failed jobs.
+     *
+     * @param  string $queueName only list failures for this queue
+     * @cli
+     */
+    public function failuresCommand($queueName = null)
+    {
+        if ($queueName === null) {
+            $failedJobs = $this->failedJobRepository->findAll();
+        } else {
+            $failedJobs = $this->failedJobRepository->findByQueueName($queueName);
+        }
+
+        foreach ($failedJobs as $failedJob) {
+            $this->outputFormatted('Queue "%s" at %s', [$failedJob->getQueueName(), $failedJob->getCrdate()->format('d.m.Y H:i:s')]);
         }
     }
 }

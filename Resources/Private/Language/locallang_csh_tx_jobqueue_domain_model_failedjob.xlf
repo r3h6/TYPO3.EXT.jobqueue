@@ -3,13 +3,10 @@
 	<file source-language="en" datatype="plaintext" original="messages" date="2016-04-28T20:01:43Z" product-name="jobqueue">
 		<header/>
 		<body>
-			<trans-unit id="tx_jobqueue_domain_model_failedjob">
-				<source>Failed Job</source>
+			<trans-unit id="queue_name.description">
+				<source>Queue name</source>
 			</trans-unit>
-			<trans-unit id="tx_jobqueue_domain_model_failedjob.queue_name">
-				<source>Queue Name</source>
-			</trans-unit>
-			<trans-unit id="tx_jobqueue_domain_model_failedjob.payload">
+			<trans-unit id="payload.description">
 				<source>Payload</source>
 			</trans-unit>
 		</body>

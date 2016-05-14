@@ -1,25 +1,91 @@
 {
     "modules": [
+        {
+            "config": {
+                "position": [
+                    260,
+                    209
+                ]
+            },
+            "name": "New Model Object",
+            "value": {
+                "actionGroup": {
+                    "_default0_list": false,
+                    "_default1_show": false,
+                    "_default2_new_create": false,
+                    "_default3_edit_update": false,
+                    "_default4_delete": false,
+                    "customActions": [
+
+                    ]
+                },
+                "name": "FailedJob",
+                "objectsettings": {
+                    "addDeletedField": true,
+                    "addHiddenField": true,
+                    "addStarttimeEndtimeFields": true,
+                    "aggregateRoot": true,
+                    "categorizable": false,
+                    "description": "",
+                    "mapToTable": "",
+                    "parentClass": "",
+                    "sorting": false,
+                    "type": "Entity",
+                    "uid": "571473010461"
+                },
+                "propertyGroup": {
+                    "properties": [
+                        {
+                            "allowedFileTypes": "",
+                            "maxItems": "1",
+                            "propertyDescription": "Queue name",
+                            "propertyIsExcludeField": false,
+                            "propertyIsRequired": true,
+                            "propertyName": "queueName",
+                            "propertyType": "String",
+                            "uid": "1013390309399"
+                        },
+                        {
+                            "allowedFileTypes": "",
+                            "maxItems": "1",
+                            "propertyDescription": "Payload",
+                            "propertyIsExcludeField": false,
+                            "propertyIsRequired": true,
+                            "propertyName": "payload",
+                            "propertyType": "Text",
+                            "uid": "680972651664"
+                        }
+                    ]
+                },
+                "relationGroup": {
+                    "relations": [
+
+                    ]
+                }
+            }
+        }
     ],
     "properties": {
         "backendModules": [
 
         ],
-        "description": "Jobqueue service",
+        "description": "Job queues for TYPO3 CMS.",
         "emConf": {
             "category": "services",
             "custom_category": "",
             "dependsOn": "typo3 => 7.6.0-7.6.99\n",
             "disableLocalization": true,
             "disableVersioning": true,
+            "skipGenerateDocumentationTemplate": true,
             "sourceLanguage": "en",
             "state": "beta",
-            "targetVersion": "6.2",
+            "targetVersion": "7.6.0-7.6.99",
             "version": "1.0.0"
         },
         "extensionKey": "jobqueue",
         "name": "Jobqueue",
         "originalExtensionKey": "jobqueue",
+        "originalVendorName": "TYPO3",
         "persons": [
             {
                 "company": "",
@@ -37,8 +103,8 @@
 
     ],
     "log": {
-        "last_modified": "2015-11-08 01:11",
-        "extension_builder_version": "6.2.0",
+        "last_modified": "2016-04-28 08:01",
+        "extension_builder_version": "7.6.0",
         "be_user": " (1)"
     }
 }
