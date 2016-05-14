@@ -109,7 +109,7 @@ Commands
     Seconds to wait for a job in the queue.
 
 :$limit:
-    Number of jobs to be done, 0 for all jobs in queue, -1 for work infinite
+    Number of jobs to be done, -1 for all jobs in queue, 0 for work infinite
 
 
 Differences to the flow package

@@ -63,12 +63,12 @@ class Worker
      *
      * @param  string  $queueName the name of the queue
      * @param  integer $timeout   time a queue waits for a job in seconds
-     * @param  integer $limit     number of jobs to be done, 0 for all jobs in queue, -1 for work infinite
+     * @param  integer $limit     number of jobs to be done, -1 for all jobs in queue, 0 for work infinite
      * @return void
      */
     public function work($queueName, $timeout = 0, $limit = 1)
     {
-        $this->getLogger()->info(sprintf('Work on queue "%s" in process "%s"', $queueName, getmypid()));
+        $this->getLogger()->info(sprintf('Work on queue "%s" with a timeout of "%s" and a limit of "%d" in process "%s"', $queueName, $timeout, $limit, getmypid()));
 
         $memoryLimit = (int) $this->extensionConfiguration->get('memoryLimit');
         $lastRestart = $this->registry->get(Registry::DAEMON_KILL_KEY);
