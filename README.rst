@@ -26,6 +26,7 @@ In the extension settings you can set the default queue class.
 You can define for each queue different settings over TYPO3_CONF_VARS.
 
 .. code-block:: php
+
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['jobqueue']['myQueueName'] = [
         'className' => 'TYPO3\\JobqueueBeanstalkd\\Queue\\BeanstalkdQueue',
         'options' => [
@@ -45,6 +46,7 @@ Jobs must implement the ``TYPO3\Jobqueue\Job\JobInterface`` interface which exte
 ``Example:``
 
 .. code-block:: php
+
         <?php
         namespace Vendor\ExtName\Job;
         class MyJob implements \TYPO3\Jobqueue\Job\JobInterface
@@ -81,6 +83,7 @@ Queue a job
 When you created a job you can add the job to a queue over the ``JobManager``.
 
 .. code-block:: php
+
         $myJob = new \Vendor\ExtName\Job\MyJob();
         $this->jobManager->queue('myQueueName', $myJob);
 
