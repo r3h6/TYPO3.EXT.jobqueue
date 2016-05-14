@@ -15,13 +15,12 @@ namespace TYPO3\Jobqueue\Job;
  * Public License for more details.                                       *
  *                                                                        */
 
-use Exception;
-use DateTime;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\Jobqueue\Exception as JobQueueException;
 use TYPO3\Jobqueue\Queue\Message;
 use TYPO3\Jobqueue\Queue\QueueManager;
 use TYPO3\Jobqueue\Job\JobInterface;
+use TYPO3\Jobqueue\Domain\Model\FailedJob;
 use TYPO3\Jobqueue\Command\JobCommandController;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -35,13 +34,31 @@ class JobManager implements SingletonInterface
      * @var TYPO3\Jobqueue\Queue\QueueManager
      * @inject
      */
-    protected $queueManager;
+    protected $queueManager = null;
 
     /**
-     * @var TYPO3\Jobqueue\Command\JobCommandController
+     * @var TYPO3\Jobqueue\Domain\Repository\FailedJobRepository
      * @inject
      */
-    protected $jobCommandController;
+    protected $failedJobRepository = null;
+
+    /**
+     * @var TYPO3\Jobqueue\Configuration\ExtConf
+     * @inject
+     */
+    protected $extConf = null;
+
+    /**
+     * @var TYPO3\Jobqueue\Job\Worker
+     * @inject
+     */
+    protected $worker = null;
+
+    /**
+     * @var TYPO3\CMS\Extbase\SignalSlot\Dispatcher
+     * @inject
+     */
+    protected $signalSlotDispatcher = null;
 
     /**
      * @var int
@@ -49,17 +66,11 @@ class JobManager implements SingletonInterface
     protected $maxAttemps;
 
     /**
-     * @var TYPO3\Jobqueue\Configuration\ExtConf
-     * @inject
-     */
-    protected $extConf;
-
-    /**
      * @return void
      */
     public function initializeObject()
     {
-        $this->maxAttemps = (int) $this->extConf->getMaxAttemps();
+        $this->maxAttemps = (int) $this->extConf->get('maxAttemps');
     }
 
     /**
@@ -67,9 +78,9 @@ class JobManager implements SingletonInterface
      *
      * @param string       $queueName   Queue name
      * @param JobInterface $job         The job
-     * @param DateTime     $availableAt Time when the job is available for executing
+     * @param \DateTime     $availableAt Time when the job is available for executing
      */
-    public function queue($queueName, JobInterface $job, DateTime $availableAt = null)
+    public function queue($queueName, JobInterface $job, \DateTime $availableAt = null)
     {
         $queue = $this->queueManager->getQueue($queueName);
 
@@ -84,12 +95,12 @@ class JobManager implements SingletonInterface
      * Queues a job with a delay when it will be available for executing.
      *
      * @param string       $queueName Queue name
-     * @param int          $delay     Delay in seconds
      * @param JobInterface $job       The job
+     * @param int          $delay     Delay in seconds
      */
-    public function delay($queueName, $delay, JobInterface $job)
+    public function delay($queueName, JobInterface $job, $delay)
     {
-        $this->queue($queueName, $job, new DateTime('@' . (time() + (int) $delay)));
+        $this->queue($queueName, $job, new \DateTime('@' . (time() + (int) $delay)));
     }
 
     /**
@@ -98,32 +109,39 @@ class JobManager implements SingletonInterface
      *
      * @param string $queueName
      * @param int    $timeout
-     * @return JobInterface The job that was executed or NULL if no job was executed and a timeout occured
+     * @return JobInterface|null The job that was executed or null if no job was executed and a timeout occured
      * @throws JobQueueException
-     * @throws Exception
      */
     public function waitAndExecute($queueName, $timeout = null)
     {
         $queue = $this->queueManager->getQueue($queueName);
         $message = $queue->waitAndReserve($timeout);
         if ($message !== null) {
+            $success = false;
             try {
                 $job = unserialize($message->getPayload());
-                if ($job->execute($queue, $message)) {
-                    $queue->finish($message);
-                    return $job;
-                } else {
-                    throw new JobQueueException('Job execution for message "'.$message->getIdentifier().'" failed', 1334056583);
+                $success = $job->execute($queue, $message);
+            } catch (\Exception $exception) {
+                throw new JobQueueException('Job execution for "' . $message->getIdentifier() . '" threw an exception', 1446806185, $exception);
+            } finally {
+                $queue->finish($message);
+                if ($success !== true) {
+                    $attemps = $message->getAttemps() + 1;
+                    if ($attemps < $this->maxAttemps) {
+                        $message->setAttemps($attemps);
+                        $queue->publish($message);
+                    } else {
+                        $failedJob = GeneralUtility::makeInstance(FailedJob::class, $queueName, $message->getPayload());
+                        $this->failedJobRepository->add($failedJob);
+                        $this->emitJobFailed($queueName, $message);
+                    }
                 }
-            } catch (Exception $exception) {
-                $attemps = $message->getAttemps() + 1;
-                if ($attemps < $this->maxAttemps) {
-                    $message->setAttemps($attemps);
-                    $queue->finish($message);
-                    $queue->publish($message);
-                }
-                throw $exception;
             }
+
+            if ($success !== true) {
+                throw new JobQueueException('Job execution for message "' . $message->getIdentifier() . '" failed', 1334056583);
+            }
+            return $job;
         }
         return null;
     }
@@ -155,15 +173,24 @@ class JobManager implements SingletonInterface
         return $this->queueManager;
     }
 
+    protected function emitJobFailed($queueName, Message $message)
+    {
+        $this->signalSlotDispatcher->dispatch(__CLASS__, 'jobFailed', [$queueName, $message]);
+    }
 
-    public function __destruct()
+    protected function flushMemoryQueues()
     {
         $queues = $this->queueManager->getQueues();
 
         foreach ($queues as $queue) {
             if ($queue instanceof \TYPO3\Jobqueue\Queue\MemoryQueue) {
-                $this->jobCommandController->workCommand($queue->getName());
+                $this->worker->work($queue->getName(), 0, Worker::LIMIT_QUEUE);
             }
         }
+    }
+
+    public function __destruct()
+    {
+        $this->flushMemoryQueues();
     }
 }

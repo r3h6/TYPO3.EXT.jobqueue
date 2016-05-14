@@ -1,28 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2015-11-08T13:11:57Z" product-name="jobqueue">
+	<file source-language="en" datatype="plaintext" original="messages" date="2016-04-28T20:01:43Z" product-name="jobqueue">
 		<header/>
 		<body>
-			<trans-unit id="tx_jobqueue_domain_model_job">
-				<source>Job</source>
+			<trans-unit id="tx_jobqueue_domain_model_failedjob">
+				<source>Failed Job</source>
 			</trans-unit>
-			<trans-unit id="tx_jobqueue_domain_model_job.queue_name">
+			<trans-unit id="tx_jobqueue_domain_model_failedjob.queue_name">
 				<source>Queue Name</source>
 			</trans-unit>
-			<trans-unit id="tx_jobqueue_domain_model_job.payload">
+			<trans-unit id="tx_jobqueue_domain_model_failedjob.payload">
 				<source>Payload</source>
-			</trans-unit>
-			<trans-unit id="tx_jobqueue_domain_model_job.state">
-				<source>State</source>
-			</trans-unit>
-			<trans-unit id="tx_jobqueue_domain_model_job.attemps">
-				<source>Attemps</source>
-			</trans-unit>
-			<trans-unit id="tx_jobqueue_domain_model_job.starttime">
-				<source>Starttime</source>
-			</trans-unit>
-			<trans-unit id="tx_jobqueue_domain_model_job.tstamp">
-				<source>Tstamp</source>
 			</trans-unit>
 		</body>
 	</file>

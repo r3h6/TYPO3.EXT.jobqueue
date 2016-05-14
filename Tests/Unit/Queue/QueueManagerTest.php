@@ -35,7 +35,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     {
         $this->queueManager = new QueueManager();
 
-        $this->extConf = $this->getMock(ExtConf::class, array('getDefaultQueue'), array(), '', false);
+        $this->extConf = $this->getMock(ExtConf::class, array('get'), array(), '', false);
         $this->inject($this->queueManager, 'extConf', $this->extConf);
 
         $this->objectManager = $this->getMock(ObjectManager::class, array('get'), array(), '', false);
@@ -53,11 +53,16 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     public function getQueueCreatesDefaultQueue()
     {
         $queueName = 'MemoryQueue';
+        $timeout = null;
 
         $this->extConf
-            ->expects($this->once())
-            ->method('getDefaultQueue')
-            ->will($this->returnValue(MemoryQueue::class));
+            ->expects($this->exactly(2))
+            ->method('get')
+            ->withConsecutive(
+                $this->equalTo('defaultQueue'),
+                $this->equalTo('defaultTimeout')
+            )
+            ->will($this->onConsecutiveCalls(MemoryQueue::class, $timeout));
 
         $this->objectManager
             ->expects($this->once())
@@ -65,7 +70,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             ->with(
                 $this->equalTo(MemoryQueue::class),
                 $this->equalTo($queueName),
-                $this->equalTo(['timeout' => null])
+                $this->equalTo(['timeout' => $timeout])
             )
             ->will($this->returnValue(new MemoryQueue($queueName, null)));
 
@@ -83,7 +88,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             'timeout' => null,
         );
 
-        $GLOBALS['TYPO3_CONF_VARS']['EXT']['jobqueue'][$queueName] = array(
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['jobqueue'][$queueName] = array(
             'className' => MemoryQueue::class,
             'options' => $options,
         );
