@@ -104,7 +104,7 @@ Daemon
 ^^^^^^
 
 You can try to use the experimental scheduler task "Jobqueue Job: daemon".
-If you are using something like "upstart" you should call the cli command "extbase job:work" with "--limit=-1".
+If you are using something like "upstart" you should call the cli command "extbase job:work" with "--limit=0".
 
 
 Commands
