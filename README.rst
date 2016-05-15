@@ -31,7 +31,7 @@ You can define for each queue different settings over TYPO3_CONF_VARS.
 .. code-block:: php
 
    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['jobqueue']['myQueueName'] = [
-      'className' => 'TYPO3\\JobqueueBeanstalkd\\Queue\\BeanstalkdQueue',
+      'className' => 'R3H6\\JobqueueBeanstalkd\\Queue\\BeanstalkdQueue',
       'options' => [
          // Options are passed into the constructor of the queue
       ],
@@ -41,7 +41,7 @@ You can define for each queue different settings over TYPO3_CONF_VARS.
 Creating a job
 --------------
 
-Jobs must implement the ``TYPO3\Jobqueue\Job\JobInterface`` interface which extends ``Serializable`` itself.
+Jobs must implement the ``R3H6\Jobqueue\Job\JobInterface`` interface which extends ``Serializable`` itself.
 
 .. tip::
 
@@ -53,7 +53,7 @@ Jobs must implement the ``TYPO3\Jobqueue\Job\JobInterface`` interface which exte
 
    <?php
    namespace Vendor\ExtName\Job;
-   class MyJob implements \TYPO3\Jobqueue\Job\JobInterface
+   class MyJob implements \R3H6\Jobqueue\Job\JobInterface
    {
       protected $identifier;
       protected $label = 'My job';
@@ -61,7 +61,7 @@ Jobs must implement the ``TYPO3\Jobqueue\Job\JobInterface`` interface which exte
       {
          $this->identifier = $identifier;
       }
-      public function execute(\TYPO3\Jobqueue\Queue\QueueInterface $queue, \TYPO3\Jobqueue\Queue\Message $message)
+      public function execute(\R3H6\Jobqueue\Queue\QueueInterface $queue, \R3H6\Jobqueue\Queue\Message $message)
       {
          // Do the job...
          return true;
@@ -140,13 +140,13 @@ Signal and Slots
       Description
 
  - :Class:
-      TYPO3\\Jobqueue\\Job\\JobManager
+      R3H6\\Jobqueue\\Job\\JobManager
    :Name:
       jobFailed
    :Method:
       waitAndExecute()
    :Arguments:
-      $queueName, TYPO3\Jobqueue\Queue\Message $message
+      $queueName, R3H6\Jobqueue\Queue\Message $message
    :Description:
       Dispatched when a job fails and reached the max attemps.
 

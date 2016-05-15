@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Tests\Unit\Job;
+namespace R3H6\Jobqueue\Tests\Unit\Job;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -15,12 +15,12 @@ namespace TYPO3\Jobqueue\Tests\Unit\Job;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Job\Worker;
+use R3H6\Jobqueue\Job\Worker;
 use TYPO3\CMS\Core\Log\Logger;
-use TYPO3\Jobqueue\Registry;
-use TYPO3\Jobqueue\Configuration\ExtensionConfiguration;
-use TYPO3\Jobqueue\Job\JobManager;
-use TYPO3\Jobqueue\Tests\Unit\Fixtures\TestJob;
+use R3H6\Jobqueue\Registry;
+use R3H6\Jobqueue\Configuration\ExtensionConfiguration;
+use R3H6\Jobqueue\Job\JobManager;
+use R3H6\Jobqueue\Tests\Unit\Fixtures\TestJob;
 
 /**
  * Unit tests for the Worker.

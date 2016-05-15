@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Configuration;
+namespace R3H6\Jobqueue\Configuration;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *

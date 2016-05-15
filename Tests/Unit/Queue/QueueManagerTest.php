@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Tests\Unit\Queue;
+namespace R3H6\Jobqueue\Tests\Unit\Queue;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -15,9 +15,9 @@ namespace TYPO3\Jobqueue\Tests\Unit\Queue;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Queue\QueueManager;
-use TYPO3\Jobqueue\Configuration\ExtensionConfiguration;
-use TYPO3\Jobqueue\Queue\MemoryQueue;
+use R3H6\Jobqueue\Queue\QueueManager;
+use R3H6\Jobqueue\Configuration\ExtensionConfiguration;
+use R3H6\Jobqueue\Queue\MemoryQueue;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**

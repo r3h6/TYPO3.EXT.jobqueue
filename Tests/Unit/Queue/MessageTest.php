@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Tests\Unit\Queue;
+namespace R3H6\Jobqueue\Tests\Unit\Queue;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -21,13 +21,13 @@ namespace TYPO3\Jobqueue\Tests\Unit\Queue;
 class MessageTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {
     /**
-     * @var \TYPO3\Jobqueue\Queue\Message
+     * @var \R3H6\Jobqueue\Queue\Message
      */
     protected $subject = null;
 
     protected function setUp()
     {
-        $this->subject = new \TYPO3\Jobqueue\Queue\Message('');
+        $this->subject = new \R3H6\Jobqueue\Queue\Message('');
     }
 
     protected function tearDown()
@@ -80,7 +80,7 @@ class MessageTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         $this->assertSame([
             'identifier' => null,
             'payload' => '',
-            'state' => \TYPO3\Jobqueue\Queue\Message::STATE_NEW,
+            'state' => \R3H6\Jobqueue\Queue\Message::STATE_NEW,
             'attemps' => 0,
         ], $this->subject->toArray(), 'Wrong initial values');
     }

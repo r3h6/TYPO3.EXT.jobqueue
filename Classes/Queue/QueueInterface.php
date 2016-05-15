@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Queue;
+namespace R3H6\Jobqueue\Queue;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -88,7 +88,7 @@ interface QueueInterface
      *
      * @param int $limit
      *
-     * @return array<\TYPO3\Jobqueue\Queue\Message> The messages up to the length of limit or an empty array if no messages are present currently
+     * @return array<\R3H6\Jobqueue\Queue\Message> The messages up to the length of limit or an empty array if no messages are present currently
      */
     public function peek($limit = 1);
 

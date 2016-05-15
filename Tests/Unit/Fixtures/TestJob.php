@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Tests\Unit\Fixtures;
+namespace R3H6\Jobqueue\Tests\Unit\Fixtures;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -15,9 +15,9 @@ namespace TYPO3\Jobqueue\Tests\Unit\Fixtures;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Job\JobInterface;
-use TYPO3\Jobqueue\Queue\Message;
-use TYPO3\Jobqueue\Queue\QueueInterface;
+use R3H6\Jobqueue\Job\JobInterface;
+use R3H6\Jobqueue\Queue\Message;
+use R3H6\Jobqueue\Queue\QueueInterface;
 
 /**
  * Test job

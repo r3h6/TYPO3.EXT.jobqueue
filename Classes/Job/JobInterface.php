@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Job;
+namespace R3H6\Jobqueue\Job;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -15,8 +15,8 @@ namespace TYPO3\Jobqueue\Job;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Queue\Message;
-use TYPO3\Jobqueue\Queue\QueueInterface;
+use R3H6\Jobqueue\Queue\Message;
+use R3H6\Jobqueue\Queue\QueueInterface;
 
 /**
  * Job interface.

@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Queue;
+namespace R3H6\Jobqueue\Queue;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -16,8 +16,8 @@ namespace TYPO3\Jobqueue\Queue;
  *                                                                        */
 
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\Jobqueue\Exception as JobQueueException;
-use TYPO3\Jobqueue\Utility\ClassNamingUtility;
+use R3H6\Jobqueue\Exception as JobQueueException;
+use R3H6\Jobqueue\Utility\ClassNamingUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -42,7 +42,7 @@ class QueueManager implements SingletonInterface
     /**
      * ExtensionConfiguration.
      *
-     * @var TYPO3\Jobqueue\Configuration\ExtensionConfiguration
+     * @var R3H6\Jobqueue\Configuration\ExtensionConfiguration
      * @inject
      */
     protected $extensionConfiguration;

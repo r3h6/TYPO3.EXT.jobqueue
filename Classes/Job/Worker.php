@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Job;
+namespace R3H6\Jobqueue\Job;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -15,9 +15,9 @@ namespace TYPO3\Jobqueue\Job;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Queue\Message;
-use TYPO3\Jobqueue\Queue\QueueInterface;
-use TYPO3\Jobqueue\Registry;
+use R3H6\Jobqueue\Queue\Message;
+use R3H6\Jobqueue\Queue\QueueInterface;
+use R3H6\Jobqueue\Registry;
 
 /**
  * Worker
@@ -28,19 +28,19 @@ class Worker
     const LIMIT_QUEUE = -1;
 
     /**
-     * @var TYPO3\Jobqueue\Configuration\ExtensionConfiguration
+     * @var R3H6\Jobqueue\Configuration\ExtensionConfiguration
      * @inject
      */
     protected $extensionConfiguration = null;
 
     /**
-     * @var \TYPO3\Jobqueue\Job\JobManager
+     * @var \R3H6\Jobqueue\Job\JobManager
      * @inject
      */
     protected $jobManager = null;
 
     /**
-     * @var \TYPO3\Jobqueue\Registry
+     * @var \R3H6\Jobqueue\Registry
      * @inject
      */
     protected $registry = null;

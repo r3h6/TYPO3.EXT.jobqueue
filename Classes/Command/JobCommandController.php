@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Command;
+namespace R3H6\Jobqueue\Command;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -15,9 +15,9 @@ namespace TYPO3\Jobqueue\Command;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Job\JobInterface;
-use TYPO3\Jobqueue\Job\Worker;
-use TYPO3\Jobqueue\Registry;
+use R3H6\Jobqueue\Job\JobInterface;
+use R3H6\Jobqueue\Job\Worker;
+use R3H6\Jobqueue\Registry;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -27,19 +27,19 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class JobCommandController extends CommandController
 {
     /**
-     * @var \TYPO3\Jobqueue\Job\JobManager
+     * @var \R3H6\Jobqueue\Job\JobManager
      * @inject
      */
     protected $jobManager = null;
 
     /**
-     * @var \TYPO3\Jobqueue\Registry
+     * @var \R3H6\Jobqueue\Registry
      * @inject
      */
     protected $registry = null;
 
     /**
-     * @var \TYPO3\Jobqueue\Domain\Repository\FailedJobRepository
+     * @var \R3H6\Jobqueue\Domain\Repository\FailedJobRepository
      * @inject
      */
     protected $failedJobRepository = null;
@@ -166,7 +166,7 @@ class JobCommandController extends CommandController
     public function workCommand($queueName, $timeout = 0, $limit = Worker::LIMIT_QUEUE)
     {
         $this->outputLine('work...');
-        /** @var TYPO3\Jobqueue\Job\Worker $worker */
+        /** @var R3H6\Jobqueue\Job\Worker $worker */
         $worker = $this->objectManager->get(Worker::class);
         $worker->work($queueName, $timeout, $limit);
     }

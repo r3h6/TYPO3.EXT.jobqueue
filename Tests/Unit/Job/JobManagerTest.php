@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Tests\Unit\Job;
+namespace R3H6\Jobqueue\Tests\Unit\Job;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -15,14 +15,14 @@ namespace TYPO3\Jobqueue\Tests\Unit\Job;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Configuration\ExtensionConfiguration;
-use TYPO3\Jobqueue\Job\JobManager;
-use TYPO3\Jobqueue\Job\Worker;
-use TYPO3\Jobqueue\Domain\Repository\FailedJobRepository;
-use TYPO3\Jobqueue\Queue\QueueManager;
-use TYPO3\Jobqueue\Exception as JobQueueException;
-use TYPO3\Jobqueue\Tests\Unit\Fixtures\TestJob;
-use TYPO3\Jobqueue\Queue\MemoryQueue;
+use R3H6\Jobqueue\Configuration\ExtensionConfiguration;
+use R3H6\Jobqueue\Job\JobManager;
+use R3H6\Jobqueue\Job\Worker;
+use R3H6\Jobqueue\Domain\Repository\FailedJobRepository;
+use R3H6\Jobqueue\Queue\QueueManager;
+use R3H6\Jobqueue\Exception as JobQueueException;
+use R3H6\Jobqueue\Tests\Unit\Fixtures\TestJob;
+use R3H6\Jobqueue\Queue\MemoryQueue;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 /**
@@ -143,7 +143,7 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 
     /**
      * @test
-     * @expectedException TYPO3\Jobqueue\Exception
+     * @expectedException R3H6\Jobqueue\Exception
      * @depends waitAndExecuteGetsAndExecutesJobFromQueue
      */
     public function waitAndExecuteJobThrowsException()

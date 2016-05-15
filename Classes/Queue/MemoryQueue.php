@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Queue;
+namespace R3H6\Jobqueue\Queue;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -65,7 +65,7 @@ class MemoryQueue implements QueueInterface
 
     /**
      * @param int $limit
-     * @return array<\TYPO3\Jobqueue\Queue\Message>
+     * @return array<\R3H6\Jobqueue\Queue\Message>
      */
     public function peek($limit = 1)
     {

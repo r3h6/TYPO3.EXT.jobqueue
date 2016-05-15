@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Job;
+namespace R3H6\Jobqueue\Job;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -16,12 +16,12 @@ namespace TYPO3\Jobqueue\Job;
  *                                                                        */
 
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\Jobqueue\Exception as JobQueueException;
-use TYPO3\Jobqueue\Queue\Message;
-use TYPO3\Jobqueue\Queue\QueueManager;
-use TYPO3\Jobqueue\Job\JobInterface;
-use TYPO3\Jobqueue\Domain\Model\FailedJob;
-use TYPO3\Jobqueue\Command\JobCommandController;
+use R3H6\Jobqueue\Exception as JobQueueException;
+use R3H6\Jobqueue\Queue\Message;
+use R3H6\Jobqueue\Queue\QueueManager;
+use R3H6\Jobqueue\Job\JobInterface;
+use R3H6\Jobqueue\Domain\Model\FailedJob;
+use R3H6\Jobqueue\Command\JobCommandController;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -31,25 +31,25 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class JobManager implements SingletonInterface
 {
     /**
-     * @var TYPO3\Jobqueue\Queue\QueueManager
+     * @var R3H6\Jobqueue\Queue\QueueManager
      * @inject
      */
     protected $queueManager = null;
 
     /**
-     * @var TYPO3\Jobqueue\Domain\Repository\FailedJobRepository
+     * @var R3H6\Jobqueue\Domain\Repository\FailedJobRepository
      * @inject
      */
     protected $failedJobRepository = null;
 
     /**
-     * @var TYPO3\Jobqueue\Configuration\ExtensionConfiguration
+     * @var R3H6\Jobqueue\Configuration\ExtensionConfiguration
      * @inject
      */
     protected $extensionConfiguration = null;
 
     /**
-     * @var TYPO3\Jobqueue\Job\Worker
+     * @var R3H6\Jobqueue\Job\Worker
      * @inject
      */
     protected $worker = null;
@@ -151,7 +151,7 @@ class JobManager implements SingletonInterface
      *
      * @param string $queueName
      * @param int    $limit
-     * @return array<TYPO3\Jobqueue\Job\JobInterface>
+     * @return array<R3H6\Jobqueue\Job\JobInterface>
      */
     public function peek($queueName, $limit = 1)
     {
@@ -166,7 +166,7 @@ class JobManager implements SingletonInterface
     }
 
     /**
-     * @return TYPO3\Jobqueue\Queue\QueueManager
+     * @return R3H6\Jobqueue\Queue\QueueManager
      */
     public function getQueueManager()
     {
@@ -195,7 +195,7 @@ class JobManager implements SingletonInterface
         $queues = $this->queueManager->getQueues();
 
         foreach ($queues as $queue) {
-            if ($queue instanceof \TYPO3\Jobqueue\Queue\MemoryQueue) {
+            if ($queue instanceof \R3H6\Jobqueue\Queue\MemoryQueue) {
                 $this->worker->work($queue->getName(), 0, Worker::LIMIT_QUEUE);
             }
         }

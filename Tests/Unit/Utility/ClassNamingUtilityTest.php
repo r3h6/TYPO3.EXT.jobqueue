@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Tests\Unit\Utility;
+namespace R3H6\Jobqueue\Tests\Unit\Utility;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -15,7 +15,7 @@ namespace TYPO3\Jobqueue\Tests\Unit\Utility;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Utility\ClassNamingUtility;
+use R3H6\Jobqueue\Utility\ClassNamingUtility;
 
 /**
  * Unit test for the ClassNamingUtility.
@@ -41,7 +41,7 @@ class ClassNamingUtilityTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
                     'subpackageKey' => 'Queue',
                     'className' => 'MemoryQueue',
                 ],
-                'TYPO3\\Jobqueue\\Queue\\MemoryQueue'
+                'R3H6\\Jobqueue\\Queue\\MemoryQueue'
             ],
             [
                 [
@@ -50,7 +50,7 @@ class ClassNamingUtilityTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
                     'subpackageKey' => 'Queue',
                     'className' => 'DatabaseQueue',
                 ],
-                'TYPO3\\JobqueueDatabase\\Queue\\DatabaseQueue'
+                'R3H6\\JobqueueDatabase\\Queue\\DatabaseQueue'
             ],
         ];
     }

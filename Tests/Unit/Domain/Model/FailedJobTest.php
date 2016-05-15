@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Tests\Unit\Domain\Model;
+namespace R3H6\Jobqueue\Tests\Unit\Domain\Model;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -16,7 +16,7 @@ namespace TYPO3\Jobqueue\Tests\Unit\Domain\Model;
  *                                                                        */
 
 /**
- * Test case for class \TYPO3\Jobqueue\Domain\Model\FailedJob.
+ * Test case for class \R3H6\Jobqueue\Domain\Model\FailedJob.
  *
  * @copyright Copyright belongs to the respective authors
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
@@ -26,13 +26,13 @@ namespace TYPO3\Jobqueue\Tests\Unit\Domain\Model;
 class FailedJobTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {
     /**
-     * @var \TYPO3\Jobqueue\Domain\Model\FailedJob
+     * @var \R3H6\Jobqueue\Domain\Model\FailedJob
      */
     protected $subject = null;
 
     public function setUp()
     {
-        $this->subject = new \TYPO3\Jobqueue\Domain\Model\FailedJob('TestQueue', 'Payload');
+        $this->subject = new \R3H6\Jobqueue\Domain\Model\FailedJob('TestQueue', 'Payload');
     }
 
     public function tearDown()

@@ -1,6 +1,6 @@
 <?php
 
-namespace TYPO3\Jobqueue\Tests\Unit\Configuration;
+namespace R3H6\Jobqueue\Tests\Unit\Configuration;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -15,7 +15,7 @@ namespace TYPO3\Jobqueue\Tests\Unit\Configuration;
  * Public License for more details.                                       *
  *                                                                        */
 
-use TYPO3\Jobqueue\Configuration\ExtensionConfiguration;
+use R3H6\Jobqueue\Configuration\ExtensionConfiguration;
 
 /**
  * Unit tests for the ExtensionConfiguration.
