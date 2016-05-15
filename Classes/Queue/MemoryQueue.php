@@ -48,7 +48,7 @@ class MemoryQueue implements QueueInterface
      * @param string $name
      * @param array  $options
      */
-    public function __construct($name, array $options)
+    public function __construct($name, array $options = array())
     {
         $this->name = $name;
         $this->options = (array) $options + $this->options;
