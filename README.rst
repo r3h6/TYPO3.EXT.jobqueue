@@ -156,3 +156,9 @@ Differences to the flow package
 
 * Namespace
 * Jobs must satisfy also the ``Serializable`` interface.
+
+
+Contributing
+------------
+
+Bug reports and pull request are welcome through `GitHub <https://github.com/r3h6/TYPO3.EXT.jobqueue/>`_
