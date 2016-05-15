@@ -15,7 +15,8 @@ Job queues for TYPO3 CMS. This extension provides a simple in-memory queue and a
 This extension is a backport of the flow package Flowpack/jobqueue-common.
 
 .. note::
-    You should install also one of the following extensions ``jobqueue_database`` or ``jobqueue_beanstalkd``.
+
+   You should install also one of the following extensions **jobqueue_database** or **jobqueue_beanstalkd**.
 
 
 Configuration
@@ -25,14 +26,16 @@ In the extension settings you can set the default queue class.
 
 You can define for each queue different settings over TYPO3_CONF_VARS.
 
+**Example:**
+
 .. code-block:: php
 
-    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['jobqueue']['myQueueName'] = [
-        'className' => 'TYPO3\\JobqueueBeanstalkd\\Queue\\BeanstalkdQueue',
-        'options' => [
-            // Options are passed into the constructor of the queue
-        ],
-    ];
+   $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['jobqueue']['myQueueName'] = [
+      'className' => 'TYPO3\\JobqueueBeanstalkd\\Queue\\BeanstalkdQueue',
+      'options' => [
+         // Options are passed into the constructor of the queue
+      ],
+   ];
 
 
 Creating a job
@@ -41,40 +44,41 @@ Creating a job
 Jobs must implement the ``TYPO3\Jobqueue\Job\JobInterface`` interface which extends ``Serializable`` itself.
 
 .. tip::
-    Jobs are getting serialized. It is recommended to serialize only data and no dependencies because queues could have a data limit.
 
-``Example:``
+   Jobs are getting serialized. It is recommended to serialize only data and no dependencies because queues could have a data limit.
+
+**Example:**
 
 .. code-block:: php
 
-        <?php
-        namespace Vendor\ExtName\Job;
-        class MyJob implements \TYPO3\Jobqueue\Job\JobInterface
-        {
-            protected $identifier;
-            protected $label = 'My job';
-            public function __construct($identifier)
-            {
-                $this->identifier = $identifier;
-            }
-            public function execute(\TYPO3\Jobqueue\Queue\QueueInterface $queue, \TYPO3\Jobqueue\Queue\Message $message)
-            {
-                // Do the job...
-                return true;
-            }
-            public function getIdentifier(){ return $this->identifier; }
-            public function getLabel(){ return $this->label; }
-            public function serialize()
-            {
-                // You must take care of serialization by yourself!
-                return serialize([$this->identifier]);
-            }
-            public function unserialize($data)
-            {
-                // You must take care of unserialization by yourself!
-                call_user_func_array([$this, '__construct'], unserialize($data));
-            }
-        }
+   <?php
+   namespace Vendor\ExtName\Job;
+   class MyJob implements \TYPO3\Jobqueue\Job\JobInterface
+   {
+      protected $identifier;
+      protected $label = 'My job';
+      public function __construct($identifier)
+      {
+         $this->identifier = $identifier;
+      }
+      public function execute(\TYPO3\Jobqueue\Queue\QueueInterface $queue, \TYPO3\Jobqueue\Queue\Message $message)
+      {
+         // Do the job...
+         return true;
+      }
+      public function getIdentifier(){ return $this->identifier; }
+      public function getLabel(){ return $this->label; }
+      public function serialize()
+      {
+         // You must take care of serialization by yourself!
+         return serialize([$this->identifier]);
+      }
+      public function unserialize($data)
+      {
+         // You must take care of unserialization by yourself!
+         call_user_func_array([$this, '__construct'], unserialize($data));
+      }
+   }
 
 
 Queue a job
@@ -82,10 +86,13 @@ Queue a job
 
 When you created a job you can add the job to a queue over the ``JobManager``.
 
+**Example:**
+
 .. code-block:: php
 
-        $myJob = new \Vendor\ExtName\Job\MyJob();
-        $this->jobManager->queue('myQueueName', $myJob);
+   $myJob = GeneralUtility::makeInstance(\Vendor\ExtName\Job\MyJob::class, 'test');
+   $jobManager = GeneralUtility::makeInstance(ObjectManager::class)->get(JobManager::class);
+   $jobManager->queue('myQueueName', $myJob);
 
 
 Executing a job
@@ -103,16 +110,45 @@ If you are using something like "upstart" you should call the cli command "extba
 Commands
 --------
 
-``extbase jow:work``
+``typo3/cli_dispatch.phpsh extbase jow:work --queue-name --timeout --limit``
 
 :$queueName:
-    The name of the queue to work on.
+   The name of the queue to work on.
 
 :$timeout:
-    Seconds to wait for a job in the queue.
+   Seconds to wait for a job in the queue.
 
 :$limit:
-    Number of jobs to be done, -1 for all jobs in queue, 0 for work infinite
+   Number of jobs to be done, -1 for all jobs in queue, 0 for work infinite
+
+
+Signal and Slots
+----------------
+
+.. t3-field-list-table::
+   :header-rows: 1
+
+ - :Class:
+      Signal Class Name
+   :Name:
+      Signal Name
+   :Method:
+      Located in Method
+   :Arguments:
+      Passed arguments
+   :Description:
+      Description
+
+ - :Class:
+      TYPO3\\Jobqueue\\Job\\JobManager
+   :Name:
+      jobFailed
+   :Method:
+      waitAndExecute()
+   :Arguments:
+      $queueName, TYPO3\Jobqueue\Queue\Message $message
+   :Description:
+      Dispatched when a job fails and reached the max attemps.
 
 
 Differences to the flow package

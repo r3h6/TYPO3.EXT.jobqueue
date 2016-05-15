@@ -29,6 +29,12 @@ class Registry implements \TYPO3\CMS\Core\SingletonInterface
     protected static $table = 'sys_registry';
     protected static $namespace = 'tx_jobqueue';
 
+    /**
+     * Set value by key.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
     public function set($key, $value)
     {
         $serializedValue = serialize($value);
@@ -46,11 +52,23 @@ class Registry implements \TYPO3\CMS\Core\SingletonInterface
         }
     }
 
+    /**
+     * Delete key.
+     *
+     * @param  string $key
+     */
     public function delete($key)
     {
         $this->getDatabasConnection()->exec_DELETEquery(static::$table, $this->getWhere($key));
     }
 
+    /**
+     * Get value by key.
+     *
+     * @param  string $key
+     * @param  mixed  $defaultValue
+     * @return mixed
+     */
     public function get($key, $defaultValue = null)
     {
         $row = $this->getDatabasConnection()->exec_SELECTgetSingleRow('entry_value', static::$table, $this->getWhere($key));
@@ -60,12 +78,16 @@ class Registry implements \TYPO3\CMS\Core\SingletonInterface
         return $defaultValue;
     }
 
+    /**
+     * Returns where clause for statement.
+     *
+     * @param  string $key
+     * @return string
+     */
     protected function getWhere($key)
     {
         return 'entry_namespace = ' . $this->getDatabasConnection()->fullQuoteStr(static::$namespace, static::$table) . ' AND entry_key = ' . $this->getDatabasConnection()->fullQuoteStr($key, static::$table);
     }
-
-
 
     /**
      * @return TYPO3\CMS\Core\Database\DatabaseConnection
