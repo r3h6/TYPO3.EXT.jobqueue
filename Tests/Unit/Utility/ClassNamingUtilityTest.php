@@ -36,7 +36,7 @@ class ClassNamingUtilityTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         return [
             [
                 [
-                    'vendorName' => 'TYPO3',
+                    'vendorName' => 'R3H6',
                     'extensionName' => 'Jobqueue',
                     'subpackageKey' => 'Queue',
                     'className' => 'MemoryQueue',
@@ -45,7 +45,7 @@ class ClassNamingUtilityTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
             ],
             [
                 [
-                    'vendorName' => 'TYPO3',
+                    'vendorName' => 'R3H6',
                     'extensionName' => 'JobqueueDatabase',
                     'subpackageKey' => 'Queue',
                     'className' => 'DatabaseQueue',
