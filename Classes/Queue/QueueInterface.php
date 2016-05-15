@@ -26,7 +26,7 @@ interface QueueInterface
      * @param string $name    Queue name
      * @param array  $options Options passed from TYPO3_CONF_VARS
      */
-    public function __construct($name, $options);
+    public function __construct($name, array $options);
 
     /**
      * Publish a message to the queue

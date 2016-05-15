@@ -65,7 +65,7 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
         // $this->jobManager = new JobManager();
         $this->jobManager = $this->getMock(JobManager::class, array('__destruct'), array(), '', false);
 
-        $this->testQueue = new MemoryQueue($this->queueName, null);
+        $this->testQueue = new MemoryQueue($this->queueName, []);
 
         $this->queueManager = $this->getMock(QueueManager::class, array('getQueue', 'getQueues'), array(), '', false);
 

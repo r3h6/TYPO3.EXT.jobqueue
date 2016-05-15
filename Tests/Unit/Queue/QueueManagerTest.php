@@ -72,7 +72,7 @@ class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
                 $this->equalTo($queueName),
                 $this->equalTo(['timeout' => $timeout])
             )
-            ->will($this->returnValue(new MemoryQueue($queueName, null)));
+            ->will($this->returnValue(new MemoryQueue($queueName, [])));
 
         $runtimeQueue = $this->queueManager->getQueue($queueName);
         $this->assertInstanceOf(MemoryQueue::class, $runtimeQueue);
