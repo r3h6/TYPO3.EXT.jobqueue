@@ -175,10 +175,20 @@ class Message
      */
     public function getDelay()
     {
-        if ($this->availableAt instanceof DateTime) {
+        if ($this->isDelayed()) {
             return max(0, (int) (new DateTime())->diff($this->availableAt)->format('%s'));
         }
 
         return 0;
+    }
+
+    /**
+     * Returns if message is delayed or not.
+     *
+     * @return boolean
+     */
+    public function isDelayed()
+    {
+        return ($this->availableAt instanceof DateTime);
     }
 }
