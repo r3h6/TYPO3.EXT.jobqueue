@@ -43,10 +43,7 @@ class MemoryQueue implements QueueInterface
     protected $options = array();
 
     /**
-     * Constructor
-     *
-     * @param string $name
-     * @param array  $options
+     * {@inheritdoc}
      */
     public function __construct($name, array $options = array())
     {
@@ -55,7 +52,7 @@ class MemoryQueue implements QueueInterface
     }
 
     /**
-     * @param Message $message
+     * {@inheritdoc}
      */
     public function finish(Message $message)
     {
@@ -64,8 +61,7 @@ class MemoryQueue implements QueueInterface
     }
 
     /**
-     * @param int $limit
-     * @return array<\R3H6\Jobqueue\Queue\Message>
+     * {@inheritdoc}
      */
     public function peek($limit = 1)
     {
@@ -73,7 +69,7 @@ class MemoryQueue implements QueueInterface
     }
 
     /**
-     * @param Message $message
+     * {@inheritdoc}
      */
     public function publish(Message $message)
     {
@@ -83,8 +79,7 @@ class MemoryQueue implements QueueInterface
     }
 
     /**
-     * @param int $timeout
-     * @return Message
+     * {@inheritdoc}
      */
     public function waitAndReserve($timeout = 60)
     {
@@ -98,8 +93,7 @@ class MemoryQueue implements QueueInterface
     }
 
     /**
-     * @param int $timeout
-     * @return Message
+     * {@inheritdoc}
      */
     public function waitAndTake($timeout = null)
     {
@@ -109,7 +103,7 @@ class MemoryQueue implements QueueInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -117,7 +111,7 @@ class MemoryQueue implements QueueInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getOptions()
     {
@@ -125,7 +119,7 @@ class MemoryQueue implements QueueInterface
     }
 
     /**
-     * @return array
+     *{@inheritdoc}
      */
     public function getMessages()
     {
@@ -141,7 +135,7 @@ class MemoryQueue implements QueueInterface
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function count()
     {
@@ -149,8 +143,7 @@ class MemoryQueue implements QueueInterface
     }
 
     /**
-     * @param string $identifier
-     * @return Message
+     * {@inheritdoc}
      */
     public function getMessage($identifier)
     {
