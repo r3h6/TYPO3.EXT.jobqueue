@@ -17,7 +17,7 @@ namespace R3H6\Jobqueue\Tests\Functional\Queue;
 use R3H6\Jobqueue\Queue\Message;
 
 /**
- * Functional test for BeanstalkdQueue
+ * Basic functional tests for all queue implementations.
  */
 trait QueueTestTrait
 {
