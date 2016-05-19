@@ -12,11 +12,11 @@ Documentation
 
 Job queues for TYPO3 CMS. This extension provides a simple in-memory queue and a cli or scheduler command to execute jobs.
 
-This extension is a backport of the flow package Flowpack/jobqueue-common.
+This extension is a backport of the flow package `Flowpack/jobqueue-common <https://github.com/Flowpack/jobqueue-common/>`_.
 
 .. note::
 
-   You should install also one of the following extensions **jobqueue_database** or **jobqueue_beanstalkd**.
+   You should install also one of the following extensions **jobqueue_database**, **jobqueue_beanstalkd** or **jobqueue_redis**.
 
 
 Configuration
@@ -43,7 +43,7 @@ Creating a job
 
 Jobs must implement the ``R3H6\Jobqueue\Job\JobInterface`` interface which extends ``Serializable`` itself.
 
-.. tip::
+.. note::
 
    Jobs are getting serialized. It is recommended to serialize only data and no dependencies because queues could have a data limit.
 
@@ -126,7 +126,6 @@ Signal and Slots
 ----------------
 
 .. t3-field-list-table::
-   :header-rows: 1
 
  - :Class:
       Signal Class Name
@@ -161,4 +160,4 @@ Differences to the flow package
 Contributing
 ------------
 
-Bug reports and pull request are welcome through `GitHub <https://github.com/r3h6/TYPO3.EXT.jobqueue/>`_
+Bug reports and pull request are welcome through `GitHub <https://github.com/r3h6/TYPO3.EXT.jobqueue/>`_.

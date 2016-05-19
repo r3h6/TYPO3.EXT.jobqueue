@@ -15,8 +15,6 @@ namespace R3H6\Jobqueue\Queue;
  * Public License for more details.                                       *
  *                                                                        */
 
-use DateTime;
-
 /**
  * Message object.
  */
@@ -59,7 +57,7 @@ class Message
     protected $attemps = 0;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      */
     protected $availableAt = null;
 
@@ -151,7 +149,7 @@ class Message
     /**
      * Get availableAt.
      *
-     * @return DateTime Date when job is available.
+     * @return \DateTime Date when job is available.
      */
     public function getAvailableAt()
     {
@@ -161,9 +159,9 @@ class Message
     /**
      * Set availableAt.
      *
-     * @param DateTime $availableAt Date when job is available.
+     * @param \DateTime $availableAt Date when job is available.
      */
-    public function setAvailableAt($availableAt)
+    public function setAvailableAt(\DateTime $availableAt = null)
     {
         $this->availableAt = $availableAt;
     }
@@ -176,7 +174,7 @@ class Message
     public function getDelay()
     {
         if ($this->isDelayed()) {
-            return max(0, (int) (new DateTime())->diff($this->availableAt)->format('%s'));
+            return max(0, $this->availableAt->getTimestamp() - time());
         }
 
         return 0;
@@ -189,6 +187,6 @@ class Message
      */
     public function isDelayed()
     {
-        return ($this->availableAt instanceof DateTime);
+        return ($this->availableAt instanceof \DateTime);
     }
 }
