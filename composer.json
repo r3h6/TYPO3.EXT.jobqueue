@@ -1,0 +1,61 @@
+{
+    "name": "r3h6/jobqueue",
+    "type": "typo3-cms-extension",
+    "description": "Job queues for TYPO3 CMS. Backport of the flow package 'flowpack/jobqueue-common'.",
+    "keywords": [
+        "TYPO3",
+        "extension",
+        "jobqueue",
+        "job",
+        "queue"
+    ],
+    "homepage": "https://github.com/r3h6/TYPO3.EXT.jobqueue",
+    "support": {
+        "issues": "https://github.com/r3h6/TYPO3.EXT.jobqueue/issues"
+    },
+    "license": "GPL-3.0+",
+    "require": {
+        "typo3/cms": "^7.6 || ^8.7"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8 || ^5.0",
+        "nimut/testing-framework": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "R3H6\\Jobqueue\\": "Classes"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "R3H6\\Jobqueue\\Tests\\": "Tests",
+            "TYPO3\\CMS\\Core\\Tests\\": ".Build/vendor/typo3/cms/typo3/sysext/core/Tests/"
+        }
+    },
+    "replace": {
+        "jobqueue": "self.version",
+        "typo3-ter/jobqueue": "self.version"
+    },
+    "config": {
+        "vendor-dir": ".Build/vendor",
+        "bin-dir": ".Build/bin",
+        "preferred-install": {
+            "typo3/cms": "source"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "mkdir -p .Build/web/typo3conf/ext/",
+            "[ -L .Build/web/typo3conf/ext/jobqueue ] || ln -snvf ../../../../. .Build/web/typo3conf/ext/jobqueue"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        },
+        "typo3/cms": {
+            "cms-package-dir": "{$vendor-dir}/typo3/cms",
+            "web-dir": ".Build/web"
+        }
+    }
+}

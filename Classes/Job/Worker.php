@@ -85,6 +85,8 @@ class Worker
                 } else if ($limit > 0 && --$limit < 1) {
                     break;
                 }
+            } else {
+                sleep(1);
             }
 
             if ($this->memoryExceeded($memoryLimit) || $this->shouldRestart($lastRestart)) {
@@ -124,7 +126,7 @@ class Worker
      */
     protected function shouldRun()
     {
-        return ((bool) $this->configurationManager->getLocalConfiguration('FE.pageUnavailable_force') === true);
+        return false === (bool) $this->configurationManager->getConfigurationValueByPath('FE/pageUnavailable_force');
     }
 
     /**
