@@ -61,6 +61,6 @@
     "suggest": {
         "r3h6/jobqueue-beanstalkd": "Beanstalkd implementation of job queues for TYPO3 CMS.",
         "r3h6/jobqueue-database": "Database implementation of job queues for TYPO3 CMS.",
-        "r3h6/jobqueue-redis": "Redis implementation of job queues for TYPO3 CMS.",
+        "r3h6/jobqueue-redis": "Redis implementation of job queues for TYPO3 CMS."
     }
 }
