@@ -30,14 +30,14 @@ trait QueueDelayTestTrait
         $this->assertSame(null, $this->queue->waitAndReserve(), 'Queue should be empty!');
 
         // Publish new message.
-        $newMessage = new Message('TYPO3');
+        $newMessage = new Message('READY IN 2 SECS FROM NOW '.date('r'));
         $newMessage->setAvailableAt(new \DateTime('now + 2sec'));
         $this->assertSame(2, $newMessage->getDelay(), 'Delay does not  match!');
 
         $this->queue->publish($newMessage);
 
         // Do the tests.
-        $this->assertSame(null, $this->queue->waitAndReserve(), 'There should be no job available at this moment!');
+        $this->assertSame(null, $this->queue->waitAndReserve(), 'There should be no job available at this moment '.date('r').'!');
 
         $message = $this->queue->waitAndReserve(3);
         $this->assertInstanceOf(Message::class, $message);
