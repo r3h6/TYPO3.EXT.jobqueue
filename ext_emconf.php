@@ -29,9 +29,9 @@ $EM_CONF[$_EXTKEY] = array(
 		'conflicts' => array(
 		),
 		'suggests' => array(
-			'jobqueue_beanstalkd' => '1.0.0-1.99.99',
-			'jobqueue_database' => '1.0.0-1.99.99',
-			'jobqueue_redis' => '1.0.0-1.99.99',
+			'jobqueue_beanstalkd' => '1.1.0-1.99.99',
+			'jobqueue_database' => '1.1.0-1.99.99',
+			'jobqueue_redis' => '1.1.0-1.99.99',
 		),
 	),
 );
