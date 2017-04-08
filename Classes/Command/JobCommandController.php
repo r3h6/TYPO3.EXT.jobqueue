@@ -47,9 +47,10 @@ class JobCommandController extends CommandController
     /**
      * Tries to (re)start a worker in a new process (EXPERIMENTAL!).
      *
-     * @param  string  $id        daemon id
+     * @param  string  $id        daemon id [alphanumeric]
      * @param  string  $queueName the name of the queue to work on
      * @param  integer $timeout   time a queue waits for a job in seconds
+     * @experimental
      */
     public function daemonCommand($id, $queueName, $timeout = 1)
     {
@@ -64,13 +65,13 @@ class JobCommandController extends CommandController
             }
         }
 
-        // // Path to dispatcher.
+        // Path to dispatcher.
         $cliDispatchPath = PATH_site . 'typo3/cli_dispatch.phpsh';
 
-        // // Test if a process can be started and the system gets the right pid.
+        // Test if a process can be started and the system gets the right pid.
         $command = 'exec php ' . $cliDispatchPath .' extbase job:sleep --id="' . $id . '"';
         $test = $this->processOpen($command);
-        if (empty($test['pid']) || $test['pid'] == getmypid()) {
+        if ($test['pid'] == getmypid()) {
             throw new \Exception("Method getmypid fails", 1458897118);
         }
         $i = 0;
@@ -101,6 +102,8 @@ class JobCommandController extends CommandController
      * Opens a new process for a given command.
      * @param  string $command to open
      * @return array           process status
+     * @throws \RuntimeException
+     * @experimental
      */
     protected function processOpen($command)
     {
@@ -111,10 +114,10 @@ class JobCommandController extends CommandController
             throw new \RuntimeException(sprintf('Could not open process "%s"!', $command), 1458849054);
         }
         $status = proc_get_status($process);
-        if ($status === false) {
+        if ($status === false || empty($status['pid'])) {
             throw new \RuntimeException('Could not get process status!', 1458849124);
-
         }
+        $status['crdate'] = time();
         return $status;
     }
 
@@ -123,6 +126,7 @@ class JobCommandController extends CommandController
      *
      * @param  string $pid process id
      * @return boolean
+     * @experimental
      */
     protected function processExist($pid)
     {
@@ -137,6 +141,7 @@ class JobCommandController extends CommandController
      *
      * @param string $id
      * @cli
+     * @internal
      */
     public function sleepCommand($id)
     {
@@ -147,6 +152,7 @@ class JobCommandController extends CommandController
     /**
      * Sends signal for stop all running daemon processes.
      * @cli
+     * @experimental
      */
     public function killCommand()
     {
