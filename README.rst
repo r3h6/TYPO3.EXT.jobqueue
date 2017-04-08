@@ -6,6 +6,9 @@
 
 .. _start:
 
+.. image:: https://travis-ci.org/r3h6/TYPO3.EXT.jobqueue.svg?branch=master
+    :target: https://travis-ci.org/r3h6/TYPO3.EXT.jobqueue
+
 =============
 Documentation
 =============
