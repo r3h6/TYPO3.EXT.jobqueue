@@ -23,8 +23,10 @@ namespace R3H6\Jobqueue\Tests\Unit\Domain\Model;
  *
  * @author R3 H6 <r3h6@outlook.com>
  */
-class FailedJobTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class FailedJobTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
 {
+    use \R3H6\Jobqueue\Tests\PhpunitCompatibilityTrait;
+
     /**
      * @var \R3H6\Jobqueue\Domain\Model\FailedJob
      */

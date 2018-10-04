@@ -25,8 +25,10 @@ use R3H6\Jobqueue\Tests\Unit\Fixtures\TestJob;
 /**
  * Unit tests for the Worker.
  */
-class WorkerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class WorkerTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
 {
+    use \R3H6\Jobqueue\Tests\PhpunitCompatibilityTrait;
+
     /**
      * @var Worker
      */

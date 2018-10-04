@@ -76,7 +76,11 @@ class QueueManager implements SingletonInterface
             }
 
             $classNameParts = ClassNamingUtility::explode($className);
-            ExtensionManagementUtility::isLoaded(GeneralUtility::camelCaseToLowerCaseUnderscored($classNameParts['extensionName']), true);
+            $extensionKey = GeneralUtility::camelCaseToLowerCaseUnderscored($classNameParts['extensionName']);
+            $isLoaded = ExtensionManagementUtility::isLoaded($extensionKey);
+            if ($isLoaded === false) {
+                throw new \BadFunctionCallException('TYPO3 Fatal Error: Extension "' . $extensionKey . '" is not loaded!', 1538683838);
+            }
 
             $queue = $this->objectManager->get($className, $queueName, $options);
 

@@ -20,8 +20,10 @@ use R3H6\Jobqueue\Configuration\ExtensionConfiguration;
 /**
  * Unit tests for the ExtensionConfiguration.
  */
-class ExtensionConfigurationTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class ExtensionConfigurationTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
 {
+    use \R3H6\Jobqueue\Tests\PhpunitCompatibilityTrait;
+
     public function setUp()
     {
         $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][ExtensionConfiguration::EXT_KEY] = serialize(['test' => 'TYPO3']);

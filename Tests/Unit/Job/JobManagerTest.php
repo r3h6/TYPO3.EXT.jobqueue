@@ -28,8 +28,10 @@ use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 /**
  * Unit tests for the JobManager.
  */
-class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class JobManagerTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
 {
+    use \R3H6\Jobqueue\Tests\PhpunitCompatibilityTrait;
+
     /**
      * @var QueueManager
      */
@@ -125,6 +127,11 @@ class JobManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
     {
         $job = new TestJob();
         $this->jobManager->delay($this->queueName, $job, 5);
+
+        $messages = $this->jobManager->peek($this->queueName);
+        $this->assertInternalType('array', $messages, 'Peek does not return messages array!');
+        $this->assertCount(1, $messages, 'Messages does not contain published job.');
+        $this->assertContainsOnlyInstancesOf(TestJob::class, $messages, 'Messages array can only contain TestJob instances.');
     }
 
     /**

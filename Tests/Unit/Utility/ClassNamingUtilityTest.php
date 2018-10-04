@@ -20,8 +20,10 @@ use R3H6\Jobqueue\Utility\ClassNamingUtility;
 /**
  * Unit test for the ClassNamingUtility.
  */
-class ClassNamingUtilityTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class ClassNamingUtilityTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
 {
+    use \R3H6\Jobqueue\Tests\PhpunitCompatibilityTrait;
+
     /**
      * @test
      * @dataProvider explodeDataProvider

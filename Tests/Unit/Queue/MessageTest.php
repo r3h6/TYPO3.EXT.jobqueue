@@ -18,8 +18,10 @@ namespace R3H6\Jobqueue\Tests\Unit\Queue;
 /**
  * Unit test for the Message.
  */
-class MessageTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class MessageTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
 {
+    use \R3H6\Jobqueue\Tests\PhpunitCompatibilityTrait;
+
     /**
      * @var \R3H6\Jobqueue\Queue\Message
      */

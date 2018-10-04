@@ -23,8 +23,10 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 /**
  * Unit tests for the QueueManager.
  */
-class QueueManagerTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
+class QueueManagerTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
 {
+    use \R3H6\Jobqueue\Tests\PhpunitCompatibilityTrait;
+
     protected $queueManager;
 
     protected $extensionConfiguration;
