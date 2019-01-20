@@ -11,7 +11,7 @@ return array(
 
         ),
         'searchFields' => 'crdate,queue_name,payload',
-        'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('jobqueue') . 'Resources/Public/Icons/tx_jobqueue_domain_model_failedjob.gif',
+        'iconfile' => 'EXT:jobqueue/Resources/Public/Icons/tx_jobqueue_domain_model_failedjob.gif',
         'readOnly' => true,
         'rootLevel' => 1,
     ),
