@@ -19,6 +19,7 @@ use R3H6\Jobqueue\Queue\QueueManager;
 use R3H6\Jobqueue\Configuration\ExtensionConfiguration;
 use R3H6\Jobqueue\Queue\MemoryQueue;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  * Unit tests for the QueueManager.
@@ -42,6 +43,17 @@ class QueueManagerTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
 
         $this->objectManager = $this->getMock(ObjectManager::class, array('get'), array(), '', false);
         $this->inject($this->queueManager, 'objectManager', $this->objectManager);
+
+        if (method_exists(ExtensionManagementUtility::class, 'setPackageManager')) {
+
+            $mockPackageManager = $this->getMock(\TYPO3\CMS\Core\Package\PackageManager::class, array('isPackageActive'), array(), '', false);
+            $mockPackageManager
+                ->method('isPackageActive')
+                ->with($this->equalTo('jobqueue'))
+                ->will($this->returnValue(true));
+
+            ExtensionManagementUtility::setPackageManager($mockPackageManager);
+        }
     }
 
     public function tearDown()
