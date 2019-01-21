@@ -21,17 +21,17 @@ $EM_CONF[$_EXTKEY] = array(
 	'uploadfolder' => '0',
 	'createDirs' => '',
 	'clearCacheOnLoad' => 0,
-	'version' => '1.2.0-dev',
+	'version' => '2.0.0-dev',
 	'constraints' => array(
 		'depends' => array(
-			'typo3' => '7.6.0-8.99.99',
+			'typo3' => '8.7.0-9.5.99',
 		),
 		'conflicts' => array(
 		),
 		'suggests' => array(
-			'jobqueue_beanstalkd' => '1.1.0-1.99.99',
-			'jobqueue_database' => '1.1.0-1.99.99',
-			'jobqueue_redis' => '1.1.0-1.99.99',
+			'jobqueue_beanstalkd' => '2.0.0-2.99.99',
+			'jobqueue_database' => '2.0.0-2.99.99',
+			'jobqueue_redis' => '2.0.0-2.99.99',
 		),
 	),
 );
